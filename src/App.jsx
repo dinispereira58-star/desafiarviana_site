@@ -12,7 +12,7 @@ function App() {
   const { services } = useActivities();
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
       <Hero />
       <Services services={services} />

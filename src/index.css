@@ -1,12 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
+  --color-canvas: #fffaf2;
+  --color-canvas-alt: #fff1e0;
+  --color-ink: #201c18;
+  --color-ink-soft: #6b6259;
   --color-brand-orange: #ff6a00;
   --color-brand-orange-dark: #e85d00;
+  --color-brand-teal: #0aa89e;
+  --color-brand-teal-dark: #078d84;
+  --color-brand-pink: #ff3d78;
+  --color-brand-yellow: #ffc233;
   --color-brand-green: #1a7a3e;
-  --color-brand-dark: #0b0e12;
-  --color-brand-dark-2: #151a20;
+  --color-brand-dark: #201c18;
   --font-display: 'Anton', 'Inter', system-ui, sans-serif;
 }
 
@@ -18,10 +25,21 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   margin: 0;
-  background-color: var(--color-brand-dark);
-  color: #f2f2f2;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: "Inter", system-ui, sans-serif;
 }
 
@@ -34,37 +52,59 @@ body {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-brand-dark);
+  background: var(--color-canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-brand-orange-dark);
+  background: var(--color-brand-orange);
   border-radius: 8px;
 }
 
-/* Grão subtil sobre o fundo escuro, para não ficar plano */
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* Textura de pontos subtil sobre o fundo claro, para não ficar plano */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(32, 28, 24, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px var(--color-ink);
+  color: transparent;
 }
 
 @keyframes float-slow {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(3%, -4%) scale(1.05); }
+  50% { transform: translate(3%, -4%) scale(1.06); }
 }
 .animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
 
 @keyframes float-slower {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-4%, 3%) scale(1.08); }
+  50% { transform: translate(-4%, 3%) scale(1.1); }
 }
 .animate-float-slower { animation: float-slower 13s ease-in-out infinite; }
+
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-2%, 4%) rotate(6deg); }
+}
+.animate-float-drift { animation: float-drift 11s ease-in-out infinite; }
 
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.animate-marquee { animation: marquee 22s linear infinite; }
+.animate-marquee { animation: marquee 26s linear infinite; }
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+.animate-wiggle { animation: wiggle 2.2s ease-in-out infinite; }

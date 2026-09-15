@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 // Placeholders de cor — SUBSTITUIR por fotos/vídeos reais das atividades
 export default function Gallery({ services = [] }) {
   return (
-    <section id="galeria" className="py-28 px-5 bg-brand-dark-2/50">
+    <section id="galeria" className="py-28 px-5 bg-canvas">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-brand-orange font-semibold text-sm tracking-widest uppercase"
+            className="text-brand-teal font-semibold text-sm tracking-widest uppercase"
           >
             Galeria
           </motion.span>
@@ -19,11 +19,11 @@ export default function Gallery({ services = [] }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="font-display uppercase text-4xl md:text-6xl mt-3"
+            className="font-display uppercase text-4xl md:text-6xl mt-3 text-ink"
           >
             Momentos que ficam
           </motion.h2>
-          <p className="text-white/60 mt-4">
+          <p className="text-ink-soft mt-4">
             Espaço reservado para fotos e vídeos reais das atividades — a
             substituir pelas imagens da empresa.
           </p>
@@ -37,11 +37,11 @@ export default function Gallery({ services = [] }) {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ scale: 1.03 }}
-              className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
+              whileHover={{ scale: 1.03, rotate: i % 2 === 0 ? -1 : 1 }}
+              className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-ink/10 ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
             >
               {s.photoUrl ? (
-                <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover" />
+                <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               ) : (
                 <motion.span
                   className="drop-shadow-lg"

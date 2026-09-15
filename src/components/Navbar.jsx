@@ -21,37 +21,57 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-brand-dark/90 backdrop-blur-md shadow-lg shadow-black/30" : "bg-transparent"
+        scrolled ? "bg-canvas/90 backdrop-blur-md shadow-lg shadow-ink/5 border-b border-ink/5" : "bg-transparent"
       }`}
     >
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
-        <a href="#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight">
-          <span className="text-2xl">⚡</span>
+        <a href="#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight text-ink">
+          <motion.span
+            className="text-2xl"
+            animate={{ rotate: [0, -10, 10, -6, 0] }}
+            transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
+          >
+            ⚡
+          </motion.span>
           <span>
             Desafiar<span className="text-brand-orange">Viana</span>
           </span>
         </a>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-soft">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="relative group hover:text-white transition-colors">
+            <a key={l.href} href={l.href} className="relative group hover:text-ink transition-colors">
               {l.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-brand-orange group-hover:w-full transition-all duration-300" />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 rounded-full bg-gradient-to-r from-brand-orange to-brand-pink group-hover:w-full transition-all duration-300" />
             </a>
           ))}
         </div>
 
         <a
           href="#contacto"
-          className="hidden md:inline-flex bg-brand-orange hover:bg-brand-orange-dark transition-all hover:scale-105 text-white font-semibold px-5 py-2 rounded-full text-sm"
+          className="hidden md:inline-flex bg-gradient-to-r from-brand-orange to-brand-pink hover:brightness-110 transition-all hover:scale-105 active:scale-95 text-white font-semibold px-5 py-2 rounded-full text-sm shadow-md shadow-orange-500/25"
         >
           Pedir Orçamento
         </a>
 
-        <button className="md:hidden text-white" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-          {open ? <X size={26} /> : <Menu size={26} />}
+        <button className="md:hidden text-ink" onClick={() => setOpen((o) => !o)} aria-label="Menu">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={open ? "close" : "open"}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="block"
+            >
+              {open ? <X size={26} /> : <Menu size={26} />}
+            </motion.span>
+          </AnimatePresence>
         </button>
       </nav>
 
@@ -62,23 +82,26 @@ export default function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden bg-brand-dark-2 border-t border-white/10 overflow-hidden"
+            className="md:hidden bg-canvas border-t border-ink/10 overflow-hidden"
           >
             <div className="px-5 py-4 flex flex-col gap-4">
-              {links.map((l) => (
-                <a
+              {links.map((l, i) => (
+                <motion.a
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="text-white/80 hover:text-brand-orange font-medium"
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="text-ink-soft hover:text-brand-orange font-medium"
                 >
                   {l.label}
-                </a>
+                </motion.a>
               ))}
               <a
                 href="#contacto"
                 onClick={() => setOpen(false)}
-                className="bg-brand-orange text-white font-semibold px-5 py-2 rounded-full text-center"
+                className="bg-gradient-to-r from-brand-orange to-brand-pink text-white font-semibold px-5 py-2 rounded-full text-center"
               >
                 Pedir Orçamento
               </a>
@@ -86,6 +109,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }
