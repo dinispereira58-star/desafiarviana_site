@@ -1,8 +1,10 @@
+import { useSiteSettings } from "../lib/useSiteSettings";
+
 export default function Footer() {
+  const s = useSiteSettings();
   return (
     <footer className="py-8 px-5 border-t border-white/10 text-center text-white/40 text-sm">
-      <p>© {new Date().getFullYear()} Desafiar Viana — Todos os direitos reservados.</p>
-      <p className="mt-1">Site em fase de teste — conteúdos e preços a confirmar.</p>
+      <p>© {new Date().getFullYear()} Desafiar Viana — {s.footer_text}</p>
     </footer>
   );
 }

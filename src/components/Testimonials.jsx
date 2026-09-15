@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { testimonials } from "../data/testimonials";
+import { useTestimonials } from "../lib/useTestimonials";
 
 export default function Testimonials() {
+  const testimonials = useTestimonials();
+  if (!testimonials.length) return null;
   return (
     <section id="testemunhos" className="py-24 px-5">
       <div className="max-w-6xl mx-auto">
@@ -29,7 +31,7 @@ export default function Testimonials() {
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
             <motion.div
-              key={t.name}
+              key={t.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

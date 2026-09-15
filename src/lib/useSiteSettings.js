@@ -6,6 +6,18 @@ const DEFAULTS = {
   contact_phone_link: "351926150134",
   contact_email: "desafiarviana@hotmail.com",
   whatsapp_number: "351926150134",
+  hero_badge: "🌲 Viana do Castelo & arredores",
+  hero_title_line1: "Adrenalina, diversão",
+  hero_title_line2: "e",
+  hero_title_highlight: "momentos inesquecíveis",
+  hero_subtitle: "Paintball, Bubble Soccer, insufláveis e festas de aniversário. Organizamos a tua atividade de A a Z — tu só tens de aparecer.",
+  hero_cta_primary: "Simular Orçamento",
+  hero_cta_secondary: "Ver Atividades",
+  hero_stat_1: "⭐ +9 anos de experiência",
+  hero_stat_2: "🎯 6 atividades diferentes",
+  hero_stat_3: "👨‍👩‍👧‍👦 Para todas as idades",
+  hero_bg_image: "",
+  footer_text: "Todos os direitos reservados.",
 };
 
 export function useSiteSettings() {

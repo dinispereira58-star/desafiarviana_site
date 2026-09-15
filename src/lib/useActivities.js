@@ -8,6 +8,7 @@ function mapActivity(a) {
     tagline: a.tagline,
     emoji: a.emoji,
     color: a.color,
+    photoUrl: a.photo_url || null,
     description: a.description,
     calculatorType: a.calculator_type,
     minPeople: a.min_people,

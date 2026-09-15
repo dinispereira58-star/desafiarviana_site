@@ -38,15 +38,19 @@ export default function Gallery({ services = [] }) {
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ scale: 1.03 }}
-              className={`relative aspect-square rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl overflow-hidden group cursor-pointer`}
+              className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
             >
-              <motion.span
-                className="drop-shadow-lg"
-                whileHover={{ scale: 1.2, rotate: 8 }}
-                transition={{ type: "spring", stiffness: 260 }}
-              >
-                {s.emoji}
-              </motion.span>
+              {s.photoUrl ? (
+                <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover" />
+              ) : (
+                <motion.span
+                  className="drop-shadow-lg"
+                  whileHover={{ scale: 1.2, rotate: 8 }}
+                  transition={{ type: "spring", stiffness: 260 }}
+                >
+                  {s.emoji}
+                </motion.span>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                 <span className="text-white font-semibold text-sm translate-y-1 group-hover:translate-y-0 transition-transform">{s.name}</span>
               </div>

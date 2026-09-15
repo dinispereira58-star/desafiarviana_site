@@ -40,9 +40,16 @@ export default function Services({ services = [] }) {
               style={{ perspective: 800 }}
               className="group relative rounded-2xl p-7 bg-white/5 border border-white/10 hover:border-white/25 transition-colors overflow-hidden"
             >
-              <div
-                className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br ${s.color} opacity-20 blur-2xl group-hover:opacity-40 group-hover:scale-125 transition-all duration-500`}
-              />
+              {s.photoUrl ? (
+                <div className="absolute inset-0 opacity-25 group-hover:opacity-35 transition-opacity">
+                  <img src={s.photoUrl} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
+                </div>
+              ) : (
+                <div
+                  className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br ${s.color} opacity-20 blur-2xl group-hover:opacity-40 group-hover:scale-125 transition-all duration-500`}
+                />
+              )}
               <motion.div
                 className="relative text-4xl mb-4 w-fit"
                 whileHover={{ scale: 1.15, rotate: -6 }}
