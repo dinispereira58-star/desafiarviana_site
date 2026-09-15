@@ -7,23 +7,35 @@ export default function Testimonials() {
     <section id="testemunhos" className="py-24 px-5">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-brand-orange font-semibold text-sm tracking-wide uppercase">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-brand-orange font-semibold text-sm tracking-widest uppercase"
+          >
             Testemunhos
-          </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold mt-3">
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-display uppercase text-4xl md:text-6xl mt-3"
+          >
             Quem experimenta, recomenda
-          </h2>
+          </motion.h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              whileHover={{ y: -4 }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="bg-white/5 border border-white/10 rounded-2xl p-6"
+              className="bg-white/5 border border-white/10 hover:border-white/20 rounded-2xl p-6 transition-colors"
             >
               <div className="flex gap-1 text-brand-orange mb-3">
                 {Array.from({ length: t.rating }).map((_, idx) => (

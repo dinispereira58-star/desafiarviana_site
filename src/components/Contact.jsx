@@ -6,10 +6,10 @@ export default function Contact() {
   return (
     <section id="contacto" className="py-24 px-5 bg-brand-dark-2/50">
       <div className="max-w-4xl mx-auto text-center">
-        <span className="text-brand-orange font-semibold text-sm tracking-wide uppercase">
+        <span className="text-brand-orange font-semibold text-sm tracking-widest uppercase">
           Fala connosco
         </span>
-        <h2 className="text-4xl md:text-5xl font-extrabold mt-3">
+        <h2 className="font-display uppercase text-4xl md:text-6xl mt-3">
           Vamos organizar a tua aventura?
         </h2>
         <p className="text-white/60 mt-4 max-w-xl mx-auto">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const links = [
@@ -26,7 +27,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
-        <a href="#topo" className="flex items-center gap-2 font-extrabold text-xl tracking-tight">
+        <a href="#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight">
           <span className="text-2xl">⚡</span>
           <span>
             Desafiar<span className="text-brand-orange">Viana</span>
@@ -35,15 +36,16 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-brand-orange transition-colors">
+            <a key={l.href} href={l.href} className="relative group hover:text-white transition-colors">
               {l.label}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-brand-orange group-hover:w-full transition-all duration-300" />
             </a>
           ))}
         </div>
 
         <a
           href="#contacto"
-          className="hidden md:inline-flex bg-brand-orange hover:bg-brand-orange-dark transition-colors text-white font-semibold px-5 py-2 rounded-full text-sm"
+          className="hidden md:inline-flex bg-brand-orange hover:bg-brand-orange-dark transition-all hover:scale-105 text-white font-semibold px-5 py-2 rounded-full text-sm"
         >
           Pedir Orçamento
         </a>
@@ -53,27 +55,37 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {open && (
-        <div className="md:hidden bg-brand-dark-2 border-t border-white/10 px-5 py-4 flex flex-col gap-4">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="text-white/80 hover:text-brand-orange font-medium"
-            >
-              {l.label}
-            </a>
-          ))}
-          <a
-            href="#contacto"
-            onClick={() => setOpen(false)}
-            className="bg-brand-orange text-white font-semibold px-5 py-2 rounded-full text-center"
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden bg-brand-dark-2 border-t border-white/10 overflow-hidden"
           >
-            Pedir Orçamento
-          </a>
-        </div>
-      )}
+            <div className="px-5 py-4 flex flex-col gap-4">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="text-white/80 hover:text-brand-orange font-medium"
+                >
+                  {l.label}
+                </a>
+              ))}
+              <a
+                href="#contacto"
+                onClick={() => setOpen(false)}
+                className="bg-brand-orange text-white font-semibold px-5 py-2 rounded-full text-center"
+              >
+                Pedir Orçamento
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

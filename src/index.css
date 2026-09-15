@@ -1,11 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-brand-orange: #ff6a00;
   --color-brand-orange-dark: #e85d00;
   --color-brand-green: #1a7a3e;
-  --color-brand-dark: #10151a;
-  --color-brand-dark-2: #171f26;
+  --color-brand-dark: #0b0e12;
+  --color-brand-dark-2: #151a20;
+  --font-display: 'Anton', 'Inter', system-ui, sans-serif;
 }
 
 * {
@@ -38,3 +40,31 @@ body {
   background: var(--color-brand-orange-dark);
   border-radius: 8px;
 }
+
+/* Grão subtil sobre o fundo escuro, para não ficar plano */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -4%) scale(1.05); }
+}
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+
+@keyframes float-slower {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4%, 3%) scale(1.08); }
+}
+.animate-float-slower { animation: float-slower 13s ease-in-out infinite; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 22s linear infinite; }

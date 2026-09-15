@@ -122,10 +122,10 @@ export default function Calculator({ services = [] }) {
     <section id="calculadora" className="py-24 px-5">
       <div className="max-w-4xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-brand-orange font-semibold text-sm tracking-wide uppercase">
+          <span className="text-brand-orange font-semibold text-sm tracking-widest uppercase">
             Simulador
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold mt-3">
+          <h2 className="font-display uppercase text-4xl md:text-6xl mt-3">
             Calcula o teu orçamento
           </h2>
           <p className="text-white/60 mt-4">
