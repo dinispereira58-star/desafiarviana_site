@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, Mail, Info, Minus, Plus } from "lucide-react";
+import { MessageCircle, Mail, Info, Minus, Plus, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { services } from "../data/services";
+import { supabase } from "../lib/supabase";
 
 // Número e email de exemplo — SUBSTITUIR pelos reais
 const WHATSAPP_NUMBER = "351926150134";
@@ -17,6 +18,10 @@ export default function Calculator() {
   const [quantities, setQuantities] = useState({}); // rental: { itemId: qty }
   const [date, setDate] = useState("");
   const [extraEquip, setExtraEquip] = useState(false);
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [submitState, setSubmitState] = useState("idle"); // idle | sending | sent | error
 
   // reset ao trocar de atividade
   useEffect(() => {
@@ -24,6 +29,7 @@ export default function Calculator() {
     setPackageId(service.ballPackages?.[0]?.id);
     setQuantities({});
     setExtraEquip(false);
+    setSubmitState("idle");
   }, [serviceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectedPackage = service.ballPackages?.find((p) => p.id === packageId);
@@ -77,6 +83,23 @@ export default function Calculator() {
   )}&body=${whatsappMessage}`;
 
   const canRequest = service.calculatorType !== "rental" || selectedItems.length > 0;
+  const canSubmit = canRequest && clientName.trim() && (clientPhone.trim() || clientEmail.trim());
+
+  const handleSubmitRequest = async () => {
+    if (!canSubmit || submitState === "sending") return;
+    setSubmitState("sending");
+    const { error } = await supabase.from("booking_requests").insert({
+      activity_id: service.id,
+      activity_name: service.name,
+      name: clientName.trim(),
+      phone: clientPhone.trim() || null,
+      email: clientEmail.trim() || null,
+      preferred_date: date || null,
+      people_count: service.calculatorType === "rental" ? null : people,
+      message: `${detailLines.join(" · ")} — valor estimado ~${estimate}€${extraEquip ? " (com equipamento extra)" : ""}`,
+    });
+    setSubmitState(error ? "error" : "sent");
+  };
 
   return (
     <section id="calculadora" className="py-24 px-5">
@@ -260,6 +283,34 @@ export default function Calculator() {
                 Equipamento/animação extra (+25€)
               </label>
             )}
+
+            <div className="space-y-3 pt-2 border-t border-white/10">
+              <p className="text-sm font-semibold text-white/80">Os teus dados, para te contactarmos</p>
+              <input
+                type="text"
+                placeholder="Nome"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white/90 placeholder:text-white/30 focus:outline-none focus:border-brand-orange"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="tel"
+                  placeholder="Telemóvel"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white/90 placeholder:text-white/30 focus:outline-none focus:border-brand-orange"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white/90 placeholder:text-white/30 focus:outline-none focus:border-brand-orange"
+                />
+              </div>
+              <p className="text-xs text-white/35">Preenche o nome e pelo menos um contacto (telemóvel ou email)</p>
+            </div>
           </div>
 
           {/* Result */}
@@ -281,6 +332,28 @@ export default function Calculator() {
             </div>
 
             <div className="mt-6 space-y-3">
+              {submitState === "sent" ? (
+                <div className="flex items-center justify-center gap-2 w-full font-semibold px-6 py-3.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400">
+                  <CheckCircle2 size={20} />
+                  Pedido enviado! Vamos confirmar em breve.
+                </div>
+              ) : (
+                <button
+                  onClick={handleSubmitRequest}
+                  disabled={!canSubmit || submitState === "sending"}
+                  className={`flex items-center justify-center gap-2 w-full font-semibold px-6 py-3.5 rounded-full transition-all ${
+                    canSubmit
+                      ? "bg-brand-orange hover:bg-brand-orange-dark text-white"
+                      : "bg-white/10 text-white/40 cursor-not-allowed"
+                  }`}
+                >
+                  {submitState === "sending" ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+                  Enviar Pedido de Marcação
+                </button>
+              )}
+              {submitState === "error" && (
+                <p className="text-center text-rose-400 text-xs">Não foi possível enviar — tenta por WhatsApp ou email abaixo.</p>
+              )}
               <a
                 href={
                   canRequest
