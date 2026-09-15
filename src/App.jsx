@@ -6,15 +6,18 @@ import Gallery from "./components/Gallery";
 import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import { useActivities } from "./lib/useActivities";
 
 function App() {
+  const { services } = useActivities();
+
   return (
     <div className="min-h-screen bg-brand-dark text-white">
       <Navbar />
       <Hero />
-      <Services />
-      <Calculator />
-      <Gallery />
+      <Services services={services} />
+      <Calculator services={services} />
+      <Gallery services={services} />
       <Testimonials />
       <Contact />
       <Footer />

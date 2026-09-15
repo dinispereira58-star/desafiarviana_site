@@ -1,20 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, Mail, Info, Minus, Plus, Send, CheckCircle2, Loader2 } from "lucide-react";
-import { services } from "../data/services";
 import { supabase } from "../lib/supabase";
+import { useSiteSettings } from "../lib/useSiteSettings";
 
-// Número e email de exemplo — SUBSTITUIR pelos reais
-const WHATSAPP_NUMBER = "351926150134";
-const CONTACT_EMAIL = "desafiarviana@hotmail.com";
+export default function Calculator({ services = [] }) {
+  const settings = useSiteSettings();
+  const [serviceId, setServiceId] = useState(null);
 
-export default function Calculator() {
-  const [serviceId, setServiceId] = useState(services[0].id);
+  // As atividades chegam de forma assíncrona (Supabase) — assim que
+  // estiverem disponíveis, seleciona a primeira por omissão.
+  useEffect(() => {
+    if (services.length && !services.some((s) => s.id === serviceId)) {
+      setServiceId(services[0].id);
+    }
+  }, [services]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const service = services.find((s) => s.id === serviceId);
 
   // --- estado específico por tipo de calculadora ---
-  const [people, setPeople] = useState(service.minPeople ?? 10);
-  const [packageId, setPackageId] = useState(service.ballPackages?.[0]?.id);
+  const [people, setPeople] = useState(10);
+  const [packageId, setPackageId] = useState(undefined);
   const [quantities, setQuantities] = useState({}); // rental: { itemId: qty }
   const [date, setDate] = useState("");
   const [extraEquip, setExtraEquip] = useState(false);
@@ -25,6 +31,7 @@ export default function Calculator() {
 
   // reset ao trocar de atividade
   useEffect(() => {
+    if (!service) return;
     setPeople(service.minPeople ?? 10);
     setPackageId(service.ballPackages?.[0]?.id);
     setQuantities({});
@@ -32,20 +39,21 @@ export default function Calculator() {
     setSubmitState("idle");
   }, [serviceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const selectedPackage = service.ballPackages?.find((p) => p.id === packageId);
+  const selectedPackage = service?.ballPackages?.find((p) => p.id === packageId);
 
   const selectedItems = useMemo(
     () =>
-      (service.items ?? [])
+      (service?.items ?? [])
         .map((item) => ({ ...item, qty: quantities[item.id] ?? 0 }))
         .filter((item) => item.qty > 0),
-    [service.items, quantities]
+    [service, quantities]
   );
 
   const setQty = (itemId, qty) =>
     setQuantities((q) => ({ ...q, [itemId]: Math.max(0, qty) }));
 
   const estimate = useMemo(() => {
+    if (!service) return 0;
     const extra = extraEquip ? 25 : 0;
     if (service.calculatorType === "paintball") {
       if (!selectedPackage) return 0;
@@ -59,6 +67,7 @@ export default function Calculator() {
   }, [service, people, selectedPackage, selectedItems, extraEquip]);
 
   const detailLines = useMemo(() => {
+    if (!service) return [];
     if (service.calculatorType === "paintball") {
       return [`Nº de pessoas: ${people}`, `Pacote: ${selectedPackage?.label ?? "-"}`];
     }
@@ -71,22 +80,22 @@ export default function Calculator() {
 
   const whatsappMessage = encodeURIComponent(
     `Olá! Gostaria de pedir um orçamento:\n` +
-      `- Atividade: ${service.name}\n` +
+      `- Atividade: ${service?.name}\n` +
       detailLines.map((l) => `- ${l}`).join("\n") +
       `\n- Data pretendida: ${date || "a combinar"}\n` +
       `- Valor estimado no site: ~${estimate}€ (sujeito a confirmação)\n\n` +
       `Podem confirmar disponibilidade?`
   );
 
-  const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-    "Pedido de orçamento - " + service.name
+  const mailtoHref = `mailto:${settings.contact_email}?subject=${encodeURIComponent(
+    "Pedido de orçamento - " + (service?.name ?? "")
   )}&body=${whatsappMessage}`;
 
-  const canRequest = service.calculatorType !== "rental" || selectedItems.length > 0;
+  const canRequest = service && (service.calculatorType !== "rental" || selectedItems.length > 0);
   const canSubmit = canRequest && clientName.trim() && (clientPhone.trim() || clientEmail.trim());
 
   const handleSubmitRequest = async () => {
-    if (!canSubmit || submitState === "sending") return;
+    if (!canSubmit || submitState === "sending" || !service) return;
     setSubmitState("sending");
     const { error } = await supabase.from("booking_requests").insert({
       activity_id: service.id,
@@ -100,6 +109,14 @@ export default function Calculator() {
     });
     setSubmitState(error ? "error" : "sent");
   };
+
+  if (!service) {
+    return (
+      <section id="calculadora" className="py-24 px-5">
+        <div className="max-w-4xl mx-auto text-center text-white/40">A carregar atividades...</div>
+      </section>
+    );
+  }
 
   return (
     <section id="calculadora" className="py-24 px-5">
@@ -173,7 +190,7 @@ export default function Calculator() {
                     Pacote de bolas
                   </label>
                   <div className="space-y-2">
-                    {service.ballPackages.map((p) => (
+                    {(service.ballPackages ?? []).map((p) => (
                       <button
                         key={p.id}
                         onClick={() => setPackageId(p.id)}
@@ -218,7 +235,7 @@ export default function Calculator() {
                   Escolhe os itens (podes combinar vários)
                 </label>
                 <div className="space-y-2">
-                  {service.items.map((item) => {
+                  {(service.items ?? []).map((item) => {
                     const qty = quantities[item.id] ?? 0;
                     return (
                       <div
@@ -357,7 +374,7 @@ export default function Calculator() {
               <a
                 href={
                   canRequest
-                    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`
+                    ? `https://wa.me/${settings.whatsapp_number}?text=${whatsappMessage}`
                     : undefined
                 }
                 target="_blank"

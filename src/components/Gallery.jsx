@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { services } from "../data/services";
 
 // Placeholders de cor — SUBSTITUIR por fotos/vídeos reais das atividades
-export default function Gallery() {
+export default function Gallery({ services = [] }) {
   return (
     <section id="galeria" className="py-24 px-5 bg-brand-dark-2/50">
       <div className="max-w-6xl mx-auto">

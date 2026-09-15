@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { services } from "../data/services";
 
-export default function Services() {
+export default function Services({ services = [] }) {
   return (
     <section id="servicos" className="py-24 px-5 bg-brand-dark-2/50">
       <div className="max-w-6xl mx-auto">
