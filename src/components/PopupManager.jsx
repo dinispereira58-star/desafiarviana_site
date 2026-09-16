@@ -151,7 +151,7 @@ function PopupItem({ p }) {
         <motion.div
           {...motionProps}
           className={`fixed z-[90] rounded-2xl overflow-hidden shadow-2xl ${CORNER_POS[p.position] || CORNER_POS["bottom-right"]}`}
-          style={{ background: p.bgColor, width: p.cornerWidth }}
+          style={{ background: p.bgColor, width: p.cornerWidth, maxWidth: "calc(100vw - 2.5rem)" }}
         >
           {showX && <CloseButton onClose={close} />}
           <PopupContent p={p} onClose={close} />

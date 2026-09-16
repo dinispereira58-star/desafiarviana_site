@@ -268,14 +268,14 @@ export default function Calculator({ services = [] }) {
                             : "bg-canvas-alt border-ink/10"
                         }`}
                       >
-                        <div className="flex items-center gap-2 text-sm">
-                          <span>{item.emoji}</span>
-                          <div>
-                            <p className="font-medium text-ink">{item.name}</p>
+                        <div className="flex items-center gap-2 text-sm min-w-0 flex-1 mr-2">
+                          <span className="shrink-0">{item.emoji}</span>
+                          <div className="min-w-0">
+                            <p className="font-medium text-ink truncate">{item.name}</p>
                             <p className="text-ink-soft text-xs">{item.price}€ /dia</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                           <motion.button
                             whileTap={{ scale: 0.85 }}
                             onClick={() => setQty(item.id, qty - 1)}

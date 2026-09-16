@@ -14,7 +14,11 @@ export function fontFamilyFor(key) {
   return FONT_OPTIONS.find((f) => f.key === key)?.family || "";
 }
 
+// clamp(mínimo, preferido-em-vw, máximo) — mesmo com um tamanho
+// "grande"/"muito grande" escolhido no CRM, o texto nunca ultrapassa o
+// que cabe no ecrã (o mínimo garante que também não fica ilegível
+// num telemóvel pequeno).
 export const TEXT_SIZES = {
-  title: { sm: "2.5rem", md: "", lg: "5.5rem", xl: "6.5rem" }, // "" = tamanho responsivo por omissão (classe Tailwind)
-  subtitle: { sm: "0.95rem", md: "", lg: "1.35rem", xl: "1.6rem" },
+  title: { sm: "clamp(1.75rem, 6vw, 2.5rem)", md: "", lg: "clamp(2.5rem, 9vw, 5.5rem)", xl: "clamp(2.75rem, 10vw, 6.5rem)" }, // "" = tamanho responsivo por omissão (classe Tailwind)
+  subtitle: { sm: "clamp(0.85rem, 3vw, 0.95rem)", md: "", lg: "clamp(1.05rem, 3.5vw, 1.35rem)", xl: "clamp(1.15rem, 4vw, 1.6rem)" },
 };
