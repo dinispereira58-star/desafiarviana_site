@@ -102,7 +102,7 @@ export default function ActivityPage() {
             transition={{ duration: 0.6 }}
             src={service.photoUrl}
             alt={service.name}
-            className="w-full h-[280px] md:h-[420px] object-cover rounded-3xl shadow-xl shadow-orange-900/10"
+            className="w-full h-[280px] md:h-[420px] object-cover object-top rounded-3xl shadow-xl shadow-orange-900/10"
           />
         </div>
       )}

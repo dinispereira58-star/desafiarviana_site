@@ -45,18 +45,20 @@ export default function Services({ services = [] }) {
               className="group relative rounded-2xl bg-white border border-ink/10 shadow-sm hover:shadow-xl hover:shadow-orange-900/10 transition-shadow overflow-hidden block"
             >
               {/* Envolvente sem "overflow-hidden" — só a imagem lá dentro é
-                  cortada; o emblema do emoji fica de fora e nunca é cortado. */}
+                  cortada; o emblema do emoji fica de fora e nunca é cortado.
+                  object-top porque as fotos atuais têm uma faixa de texto
+                  ("PAINTBALL", etc.) no terço inferior — mostrar sempre o
+                  topo evita cortar em cima dessa faixa. */}
               <div className="relative">
                 <div className="relative h-56 overflow-hidden bg-canvas-alt">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-15`} />
                   {s.photoUrl ? (
                     <img
                       src={s.photoUrl}
                       alt=""
-                      className="relative w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="relative w-full h-full flex items-center justify-center">
+                    <div className={`w-full h-full bg-gradient-to-br ${s.color} flex items-center justify-center`}>
                       <span className="text-6xl drop-shadow-md">{s.emoji}</span>
                     </div>
                   )}
