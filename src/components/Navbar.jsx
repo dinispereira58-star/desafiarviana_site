@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useSiteSettings } from "../lib/useSiteSettings";
 
 const links = [
   { href: "/#servicos", label: "Serviços" },
@@ -12,6 +13,7 @@ const links = [
 ];
 
 export default function Navbar() {
+  const s = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -32,13 +34,17 @@ export default function Navbar() {
     >
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
         <Link to="/#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight text-ink">
-          <motion.span
-            className="text-2xl"
-            animate={{ rotate: [0, -10, 10, -6, 0] }}
-            transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
-          >
-            ⚡
-          </motion.span>
+          {s.site_logo_url ? (
+            <img src={s.site_logo_url} alt="Desafiar Viana" className="h-9 w-9 object-contain rounded-lg shrink-0" />
+          ) : (
+            <motion.span
+              className="text-2xl"
+              animate={{ rotate: [0, -10, 10, -6, 0] }}
+              transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
+            >
+              ⚡
+            </motion.span>
+          )}
           <span>
             Desafiar<span className="text-brand-orange">Viana</span>
           </span>
