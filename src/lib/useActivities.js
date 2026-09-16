@@ -15,6 +15,10 @@ function mapActivity(a) {
     pricePerPerson: a.price_per_person,
     ballPackages: a.ball_packages || [],
     items: a.items || [],
+    longDescription: a.long_description || "",
+    safetyRules: a.safety_rules || [],
+    gallery: a.gallery || [],
+    priceNote: a.price_note || "",
   };
 }
 

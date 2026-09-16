@@ -1,4 +1,7 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
+const MotionLink = motion(Link);
 
 // Placeholders de cor — SUBSTITUIR por fotos/vídeos reais das atividades
 export default function Gallery({ services = [] }) {
@@ -31,14 +34,15 @@ export default function Gallery({ services = [] }) {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {services.map((s, i) => (
-            <motion.div
+            <MotionLink
               key={s.id}
+              to={`/atividades/${s.id}`}
               initial={{ opacity: 0, scale: 0.85 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ scale: 1.03, rotate: i % 2 === 0 ? -1 : 1 }}
-              className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-ink/10 ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
+              className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-ink/10 block ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
             >
               {s.photoUrl ? (
                 <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -54,7 +58,7 @@ export default function Gallery({ services = [] }) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                 <span className="text-white font-semibold text-sm translate-y-1 group-hover:translate-y-0 transition-transform">{s.name}</span>
               </div>
-            </motion.div>
+            </MotionLink>
           ))}
         </div>
       </div>

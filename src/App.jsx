@@ -1,27 +1,13 @@
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Services from "./components/Services";
-import Calculator from "./components/Calculator";
-import Gallery from "./components/Gallery";
-import Testimonials from "./components/Testimonials";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
-import { useActivities } from "./lib/useActivities";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import ActivityPage from "./pages/ActivityPage";
 
 function App() {
-  const { services } = useActivities();
-
   return (
-    <div className="min-h-screen bg-canvas text-ink">
-      <Navbar />
-      <Hero />
-      <Services services={services} />
-      <Calculator services={services} />
-      <Gallery services={services} />
-      <Testimonials />
-      <Contact />
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/atividades/:id" element={<ActivityPage />} />
+    </Routes>
   );
 }
 

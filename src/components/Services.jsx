@@ -1,4 +1,7 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
+const MotionLink = motion(Link);
 
 export default function Services({ services = [] }) {
   return (
@@ -25,20 +28,21 @@ export default function Services({ services = [] }) {
           </motion.h2>
           <p className="text-ink-soft mt-4">
             Do paintball radical às festas em família — temos uma atividade para
-            cada ocasião.
+            cada ocasião. Carrega numa atividade para ver todos os detalhes.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((s, i) => (
-            <motion.div
+            <MotionLink
               key={s.id}
+              to={`/atividades/${s.id}`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.55, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -8 }}
-              className="group relative rounded-2xl bg-white border border-ink/10 shadow-sm hover:shadow-xl hover:shadow-orange-900/10 transition-shadow overflow-hidden"
+              className="group relative rounded-2xl bg-white border border-ink/10 shadow-sm hover:shadow-xl hover:shadow-orange-900/10 transition-shadow overflow-hidden block"
             >
               <div className="relative h-40 overflow-hidden">
                 {s.photoUrl ? (
@@ -68,15 +72,12 @@ export default function Services({ services = [] }) {
                 <p className="text-ink-soft text-sm leading-relaxed">
                   {s.description}
                 </p>
-                <a
-                  href="#calculadora"
-                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-brand-orange transition-colors"
-                >
-                  Simular preço
+                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-brand-orange transition-colors">
+                  Ver detalhes
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </a>
+                </span>
               </div>
-            </motion.div>
+            </MotionLink>
           ))}
         </div>
       </div>

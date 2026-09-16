@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { href: "#servicos", label: "Serviços" },
-  { href: "#calculadora", label: "Orçamento" },
-  { href: "#galeria", label: "Galeria" },
-  { href: "#testemunhos", label: "Testemunhos" },
-  { href: "#contacto", label: "Contactos" },
+  { href: "/#servicos", label: "Serviços" },
+  { href: "/#calculadora", label: "Orçamento" },
+  { href: "/#galeria", label: "Galeria" },
+  { href: "/#testemunhos", label: "Testemunhos" },
+  { href: "/#contacto", label: "Contactos" },
 ];
 
 export default function Navbar() {
@@ -30,7 +31,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
-        <a href="#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight text-ink">
+        <Link to="/#topo" className="flex items-center gap-2 font-display uppercase text-xl tracking-tight text-ink">
           <motion.span
             className="text-2xl"
             animate={{ rotate: [0, -10, 10, -6, 0] }}
@@ -41,23 +42,23 @@ export default function Navbar() {
           <span>
             Desafiar<span className="text-brand-orange">Viana</span>
           </span>
-        </a>
+        </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-soft">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="relative group hover:text-ink transition-colors">
+            <Link key={l.href} to={l.href} className="relative group hover:text-ink transition-colors">
               {l.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 rounded-full bg-gradient-to-r from-brand-orange to-brand-pink group-hover:w-full transition-all duration-300" />
-            </a>
+            </Link>
           ))}
         </div>
 
-        <a
-          href="#contacto"
+        <Link
+          to="/#contacto"
           className="hidden md:inline-flex bg-gradient-to-r from-brand-orange to-brand-pink hover:brightness-110 transition-all hover:scale-105 active:scale-95 text-white font-semibold px-5 py-2 rounded-full text-sm shadow-md shadow-orange-500/25"
         >
           Pedir Orçamento
-        </a>
+        </Link>
 
         <button className="md:hidden text-ink" onClick={() => setOpen((o) => !o)} aria-label="Menu">
           <AnimatePresence mode="wait" initial={false}>
@@ -86,25 +87,24 @@ export default function Navbar() {
           >
             <div className="px-5 py-4 flex flex-col gap-4">
               {links.map((l, i) => (
-                <motion.a
+                <motion.div
                   key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="text-ink-soft hover:text-brand-orange font-medium"
                 >
-                  {l.label}
-                </motion.a>
+                  <Link to={l.href} onClick={() => setOpen(false)} className="text-ink-soft hover:text-brand-orange font-medium">
+                    {l.label}
+                  </Link>
+                </motion.div>
               ))}
-              <a
-                href="#contacto"
+              <Link
+                to="/#contacto"
                 onClick={() => setOpen(false)}
                 className="bg-gradient-to-r from-brand-orange to-brand-pink text-white font-semibold px-5 py-2 rounded-full text-center"
               >
                 Pedir Orçamento
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}
