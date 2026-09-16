@@ -44,20 +44,25 @@ export default function Services({ services = [] }) {
               whileHover={{ y: -8 }}
               className="group relative rounded-2xl bg-white border border-ink/10 shadow-sm hover:shadow-xl hover:shadow-orange-900/10 transition-shadow overflow-hidden block"
             >
-              <div className="relative h-40 overflow-hidden">
-                {s.photoUrl ? (
-                  <img
-                    src={s.photoUrl}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className={`w-full h-full bg-gradient-to-br ${s.color} flex items-center justify-center`}>
-                    <span className="text-5xl drop-shadow-md">{s.emoji}</span>
-                  </div>
-                )}
+              {/* Envolvente sem "overflow-hidden" — só a imagem lá dentro é
+                  cortada; o emblema do emoji fica de fora e nunca é cortado. */}
+              <div className="relative">
+                <div className="relative h-56 overflow-hidden bg-canvas-alt">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-15`} />
+                  {s.photoUrl ? (
+                    <img
+                      src={s.photoUrl}
+                      alt=""
+                      className="relative w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <span className="text-6xl drop-shadow-md">{s.emoji}</span>
+                    </div>
+                  )}
+                </div>
                 <motion.div
-                  className={`absolute -bottom-6 left-5 w-14 h-14 rounded-2xl bg-gradient-to-br ${s.color} shadow-lg flex items-center justify-center text-2xl border-4 border-white`}
+                  className={`absolute -bottom-6 left-5 w-14 h-14 rounded-2xl bg-gradient-to-br ${s.color} shadow-lg flex items-center justify-center text-2xl border-4 border-white z-10`}
                   whileHover={{ scale: 1.15, rotate: -8 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
