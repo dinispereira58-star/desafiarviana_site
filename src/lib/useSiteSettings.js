@@ -17,6 +17,15 @@ const DEFAULTS = {
   hero_stat_2: "🎯 6 atividades diferentes",
   hero_stat_3: "👨‍👩‍👧‍👦 Para todas as idades",
   hero_bg_image: "",
+  hero_background_type: "color", // "color" | "image"
+  hero_background_image: "",
+  hero_background_opacity: 40,
+  hero_title_color: "",
+  hero_title_font: "",
+  hero_title_size: "",
+  hero_subtitle_color: "",
+  hero_subtitle_font: "",
+  hero_subtitle_size: "",
   footer_text: "Todos os direitos reservados.",
 };
 

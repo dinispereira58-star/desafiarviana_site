@@ -1,35 +1,62 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Calculator, ChevronDown } from "lucide-react";
 import { useSiteSettings } from "../lib/useSiteSettings";
+import { fontFamilyFor, TEXT_SIZES } from "../lib/fonts";
 
 export default function Hero() {
   const s = useSiteSettings();
+  const useImageBg = s.hero_background_type === "image" && s.hero_background_image;
+
+  const titleStyle = {
+    color: s.hero_title_color || undefined,
+    fontFamily: fontFamilyFor(s.hero_title_font) || undefined,
+    fontSize: TEXT_SIZES.title[s.hero_title_size] || undefined,
+  };
+  const subtitleStyle = {
+    color: s.hero_subtitle_color || undefined,
+    fontFamily: fontFamilyFor(s.hero_subtitle_font) || undefined,
+    fontSize: TEXT_SIZES.subtitle[s.hero_subtitle_size] || undefined,
+  };
 
   return (
     <section
       id="topo"
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 bg-canvas"
     >
-      {/* Fundo claro com nódoas de cor vibrantes */}
-      <div className="absolute inset-0 dot-grid opacity-60" />
-      <motion.div
-        className="absolute -top-24 -left-24 w-[34rem] h-[34rem] rounded-full bg-brand-orange/25 blur-[110px] animate-float-slow"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      />
-      <motion.div
-        className="absolute bottom-0 right-0 w-[30rem] h-[30rem] rounded-full bg-brand-teal/25 blur-[110px] animate-float-slower"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.2 }}
-      />
-      <motion.div
-        className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-brand-yellow/30 blur-[90px] animate-float-drift"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.4 }}
-      />
+      {/* Fundo — cores/nódoas (padrão) ou imagem com transparência ajustável */}
+      {useImageBg ? (
+        <>
+          <img
+            src={s.hero_background_image}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: (s.hero_background_opacity ?? 40) / 100 }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-canvas/40 via-canvas/70 to-canvas" />
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 dot-grid opacity-60" />
+          <motion.div
+            className="absolute -top-24 -left-24 w-[34rem] h-[34rem] rounded-full bg-brand-orange/25 blur-[110px] animate-float-slow"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          />
+          <motion.div
+            className="absolute bottom-0 right-0 w-[30rem] h-[30rem] rounded-full bg-brand-teal/25 blur-[110px] animate-float-slower"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          />
+          <motion.div
+            className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-brand-yellow/30 blur-[90px] animate-float-drift"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+          />
+        </>
+      )}
 
       <div className="relative z-10 max-w-6xl mx-auto px-5 grid lg:grid-cols-[1.15fr_0.85fr] gap-14 items-center">
         <div className="text-center lg:text-left">
@@ -46,7 +73,7 @@ export default function Hero() {
             {s.hero_badge}
           </motion.span>
 
-          <h1 className="font-display uppercase leading-[0.95] tracking-tight text-5xl sm:text-6xl md:text-7xl text-ink">
+          <h1 style={titleStyle} className="font-display uppercase leading-[0.95] tracking-tight text-5xl sm:text-6xl md:text-7xl text-ink">
             {[s.hero_title_line1, s.hero_title_line2].filter(Boolean).map((word, i) => (
               <motion.span
                 key={i}
@@ -70,6 +97,7 @@ export default function Hero() {
           </h1>
 
           <motion.p
+            style={subtitleStyle}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.55 }}
