@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { usePopups } from "../lib/usePopups";
@@ -27,9 +28,9 @@ const CORNER_POS = {
   "bottom-right": "bottom-5 right-5",
 };
 
-function dismissedKey(id) {
-  return `dv_popup_dismissed_${id}`;
-}
+// Avisos fechados nesta visita (só em memória): voltam a aparecer a cada
+// recarregamento da página, mas não reaparecem ao navegar pelo site.
+const closedThisLoad = new Set();
 
 function PopupContent({ p, onClose }) {
   const sizes = TEXT_PX[p.textSize] || TEXT_PX.md;
@@ -69,16 +70,17 @@ function CloseButton({ onClose, dark }) {
 }
 
 function PopupItem({ p }) {
-  const [visible, setVisible] = useState(() => sessionStorage.getItem(dismissedKey(p.id)) !== "1");
+  const [visible, setVisible] = useState(() => p.kind === "bar" || !closedThisLoad.has(p.id));
   const motionProps = MOTION[p.animation] || MOTION.fade;
 
   const close = () => {
-    try { sessionStorage.setItem(dismissedKey(p.id), "1"); } catch { /* ignora falha de sessionStorage (modo privado) */ }
+    if (p.kind === "bar") return;   // a barra fica sempre visível
+    closedThisLoad.add(p.id);
     setVisible(false);
   };
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || p.kind === "bar") return;
     if (p.closeMode === "timer" || p.closeMode === "both") {
       if (!p.autoCloseSeconds) return;
       const t = setTimeout(close, p.autoCloseSeconds * 1000);
@@ -86,7 +88,23 @@ function PopupItem({ p }) {
     }
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const showX = p.closeMode === "x" || p.closeMode === "both";
+  const showX = p.kind !== "bar" && (p.closeMode === "x" || p.closeMode === "both");
+
+  // Barra no topo: o menu (fixo) desce para baixo dela e a página também.
+  useEffect(() => {
+    if (p.kind !== "bar" || p.position !== "top") return;
+    const el = document.getElementById(`barra-${p.id}`);
+    const apply = () => {
+      const h = el?.offsetHeight || p.barSize || 0;
+      document.documentElement.style.setProperty("--top-bar-h", `${h}px`);
+      document.body.style.paddingTop = `${h}px`;
+    };
+    apply();
+    const ro = el && typeof ResizeObserver !== "undefined" ? new ResizeObserver(apply) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", apply);
+    return () => { ro?.disconnect(); window.removeEventListener("resize", apply); document.documentElement.style.removeProperty("--top-bar-h"); document.body.style.paddingTop = ""; };
+  }, [p.kind, p.position, p.id, p.barSize]);
 
   if (p.kind === "modal") {
     return (
@@ -119,6 +137,7 @@ function PopupItem({ p }) {
         {visible && (
           <motion.div
             {...motionProps}
+            id={`barra-${p.id}`}
             className={`fixed left-0 right-0 z-[90] flex items-center justify-center gap-4 px-5 ${isTop ? "top-0" : "bottom-0"}`}
             style={{ background: p.bgColor, color: p.textColor, minHeight: p.barSize, fontFamily: fontFamilyFor(p.fontFamily) || undefined }}
           >
@@ -161,12 +180,15 @@ function PopupItem({ p }) {
   );
 }
 
+// Popup do centro e caixas de canto: só na página inicial. Barras: em todas.
 export default function PopupManager() {
   const popups = usePopups();
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
   const ordered = useMemo(() => [...popups].sort((a, b) => a.displayOrder - b.displayOrder), [popups]);
   return (
     <>
-      {ordered.map((p) => <PopupItem key={p.id} p={p} />)}
+      {ordered.filter((p) => p.kind === "bar" || isHome).map((p) => <PopupItem key={p.id} p={p} />)}
     </>
   );
 }

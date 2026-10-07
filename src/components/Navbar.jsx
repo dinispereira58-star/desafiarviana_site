@@ -28,7 +28,8 @@ export default function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      style={{ top: "var(--top-bar-h, 0px)" }}
+      className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-canvas/90 backdrop-blur-md shadow-lg shadow-ink/5 border-b border-ink/5" : "bg-transparent"
       }`}
     >
