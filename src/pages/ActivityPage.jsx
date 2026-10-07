@@ -9,9 +9,16 @@ import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
 
-// Intros cinematográficas por atividade (por agora só o Paintball adultos).
+// Intros cinematográficas por atividade: fotos (em public/intro/<atividade>/),
+// efeito (paint | confetti | stars | bubbles), cor e palavras de impacto.
+const photos = (id, n) => Array.from({ length: n }, (_, i) => `/intro/${id}/${i + 1}.jpg`);
 const INTROS = {
-  paintball: { images: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/intro/paintball/pb${n}.jpg`), accent: "#ff6a00" },
+  paintball: { images: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/intro/paintball/pb${n}.jpg`), theme: { accent: "#ff6a00", effect: "paint", words: ["ESTRATÉGIA", "ADRENALINA", "EQUIPA", "MIRA", "ATAQUE", "VITÓRIA"] } },
+  "paintball-kids": { images: photos("paintball-kids", 7), theme: { accent: "#ff3d78", effect: "paint", words: ["DIVERSÃO", "CORAGEM", "EQUIPA", "AVENTURA", "MIRA", "VITÓRIA"] } },
+  festas: { images: photos("festas", 7), theme: { accent: "#ffc233", effect: "confetti", emoji: "🎉", words: ["FESTA", "MAGIA", "BALÕES", "AMIGOS", "SURPRESA", "PARABÉNS"] } },
+  insuflaveis: { images: photos("insuflaveis", 5), theme: { accent: "#38bdf8", effect: "stars", emoji: "🏰", title: "Insufláveis", words: ["SALTOS", "ESCORREGAS", "CASTELOS", "GARGALHADAS"] } },
+  "bubble-soccer": { images: photos("bubble-soccer", 4), theme: { accent: "#0aa89e", effect: "bubbles", emoji: "⚽", words: ["CHOQUE", "GOLO", "RISOTA"] } },
+  atl: { images: photos("atl", 6), theme: { accent: "#7cff3a", effect: "confetti", emoji: "🌈", title: "ATL", words: ["BRINCAR", "APRENDER", "AMIGOS", "DESCOBRIR", "CRESCER"] } },
 };
 
 // Preço com desconto: o antigo riscado e o novo em destaque.
@@ -101,7 +108,7 @@ export default function ActivityPage() {
   return (
     <div className="min-h-screen bg-canvas">
       {showIntro && intro && (
-        <CinematicIntro images={intro.images} title={service.name} tagline={service.tagline} accent={intro.accent} storageKey={introKey} onDone={() => setShowIntro(false)} />
+        <CinematicIntro images={intro.images} title={service.name} tagline={service.tagline} theme={intro.theme} storageKey={introKey} onDone={() => setShowIntro(false)} />
       )}
       <Navbar />
 
