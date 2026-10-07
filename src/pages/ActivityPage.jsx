@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, MessageCircle, ShieldCheck, Images, Euro } from "lucide-react";
 import Navbar from "../components/Navbar";
@@ -7,6 +7,12 @@ import Footer from "../components/Footer";
 import { useActivities } from "../lib/useActivities";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
+import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
+
+// Intros cinematográficas por atividade (por agora só o Paintball adultos).
+const INTROS = {
+  paintball: { images: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/intro/paintball/pb${n}.jpg`), accent: "#ff6a00" },
+};
 
 // Preço com desconto: o antigo riscado e o novo em destaque.
 function Price({ value, pct, unit }) {
@@ -61,6 +67,12 @@ export default function ActivityPage() {
   const { services, loading } = useActivities();
   const settings = useSiteSettings();
   const service = services.find((s) => s.id === id);
+  // Intro: uma vez por sessão (?intro=1 mostra sempre).
+  const [params] = useSearchParams();
+  const intro = INTROS[id];
+  const introKey = `intro-visto:${id}`;
+  const [showIntro, setShowIntro] = useState(() => !!intro && (params.get("intro") === "1" || shouldPlayIntro(introKey)));
+  useEffect(() => { intro?.images.forEach((src) => { const i = new Image(); i.src = src; }); }, [intro]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   useEffect(() => {
@@ -88,6 +100,9 @@ export default function ActivityPage() {
 
   return (
     <div className="min-h-screen bg-canvas">
+      {showIntro && intro && (
+        <CinematicIntro images={intro.images} title={service.name} tagline={service.tagline} accent={intro.accent} storageKey={introKey} onDone={() => setShowIntro(false)} />
+      )}
       <Navbar />
 
       <section className="relative pt-28 pb-10 px-5 overflow-hidden">
