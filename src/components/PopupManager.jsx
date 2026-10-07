@@ -28,6 +28,9 @@ const CORNER_POS = {
   "bottom-right": "bottom-5 right-5",
 };
 
+// Largura do popup do centro (guardada em corner_width; 320 = valor antigo por omissão → 448).
+const modalWidth = (p) => (!p.cornerWidth || p.cornerWidth === 320 ? 448 : p.cornerWidth);
+
 // Avisos fechados nesta visita (só em memória): voltam a aparecer a cada
 // recarregamento da página, mas não reaparecem ao navegar pelo site.
 const closedThisLoad = new Set();
@@ -41,7 +44,7 @@ function PopupContent({ p, onClose }) {
   return (
     <>
       {showImage && (
-        <img src={p.imageUrl} alt="" className={p.contentType === "image" ? "w-full h-full object-cover" : "w-full h-40 object-cover"} />
+        <img src={p.imageUrl} alt="" className={p.contentType === "image" ? "block w-full h-auto max-h-[92vh] object-contain" : "w-full h-40 md:h-56 object-cover"} />
       )}
       {showText && (
         <div className="px-5 py-4" style={style}>
@@ -118,8 +121,8 @@ function PopupItem({ p }) {
             />
             <motion.div
               {...motionProps}
-              className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
-              style={{ background: p.bgColor }}
+              className="relative w-full rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] overflow-y-auto"
+              style={{ background: p.bgColor, maxWidth: modalWidth(p) }}
             >
               {showX && <CloseButton onClose={close} />}
               <PopupContent p={p} onClose={close} />
