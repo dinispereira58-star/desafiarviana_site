@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Mail, Info, Minus, Plus, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { useSiteSettings } from "../lib/useSiteSettings";
+import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 
 export default function Calculator({ services = [] }) {
   const settings = useSiteSettings();
@@ -52,19 +53,17 @@ export default function Calculator({ services = [] }) {
   const setQty = (itemId, qty) =>
     setQuantities((q) => ({ ...q, [itemId]: Math.max(0, qty) }));
 
-  const estimate = useMemo(() => {
+  // Desconto da atividade (CRM): aplica-se ao preço da atividade, não ao extra.
+  const pct = discountOf(service);
+  const base = useMemo(() => {
     if (!service) return 0;
-    const extra = extraEquip ? 25 : 0;
-    if (service.calculatorType === "paintball") {
-      if (!selectedPackage) return 0;
-      return people * selectedPackage.pricePerPerson + extra;
-    }
-    if (service.calculatorType === "rental") {
-      return selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0) + extra;
-    }
-    // people
-    return service.pricePerPerson * Math.max(people, service.minPeople) + extra;
-  }, [service, people, selectedPackage, selectedItems, extraEquip]);
+    if (service.calculatorType === "paintball") return selectedPackage ? people * selectedPackage.pricePerPerson : 0;
+    if (service.calculatorType === "rental") return selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    return service.pricePerPerson * Math.max(people, service.minPeople);
+  }, [service, people, selectedPackage, selectedItems]);
+  const extraValue = extraEquip ? 25 : 0;
+  const fullEstimate = base + extraValue;
+  const estimate = Math.round((withDiscount(base, pct) + extraValue) * 100) / 100;
 
   const detailLines = useMemo(() => {
     if (!service) return [];
@@ -83,7 +82,7 @@ export default function Calculator({ services = [] }) {
       `- Atividade: ${service?.name}\n` +
       detailLines.map((l) => `- ${l}`).join("\n") +
       `\n- Data pretendida: ${date || "a combinar"}\n` +
-      `- Valor estimado no site: ~${estimate}€ (sujeito a confirmação)\n\n` +
+      `- Valor estimado no site: ~${fmtEuro(estimate)}€${pct ? ` (com ${fmtEuro(pct)}% de desconto${service?.discountLabel ? ` — ${service.discountLabel}` : ""}; sem desconto ${fmtEuro(fullEstimate)}€)` : ""} (sujeito a confirmação)\n\n` +
       `Podem confirmar disponibilidade?`
   );
 
@@ -105,7 +104,7 @@ export default function Calculator({ services = [] }) {
       email: clientEmail.trim() || null,
       preferred_date: date || null,
       people_count: service.calculatorType === "rental" ? null : people,
-      message: `${detailLines.join(" · ")} — valor estimado ~${estimate}€${extraEquip ? " (com equipamento extra)" : ""}`,
+      message: `${detailLines.join(" · ")} — valor estimado ~${fmtEuro(estimate)}€${pct ? ` (desconto ${fmtEuro(pct)}%)` : ""}${extraEquip ? " (com equipamento extra)" : ""}`,
     });
     setSubmitState(error ? "error" : "sent");
   };
@@ -220,7 +219,7 @@ export default function Calculator({ services = [] }) {
                             />
                           )}
                           <span className="relative">{p.label}</span>
-                          <span className="relative">{p.pricePerPerson}€ /pessoa</span>
+                          <span className="relative">{pct ? <><span className="line-through opacity-60 mr-1.5 text-xs">{fmtEuro(p.pricePerPerson)}€</span>{fmtEuro(withDiscount(p.pricePerPerson, pct))}€</> : `${fmtEuro(p.pricePerPerson)}€`} /pessoa</span>
                         </button>
                       );
                     })}
@@ -272,7 +271,7 @@ export default function Calculator({ services = [] }) {
                           <span className="shrink-0">{item.emoji}</span>
                           <div className="min-w-0">
                             <p className="font-medium text-ink truncate">{item.name}</p>
-                            <p className="text-ink-soft text-xs">{item.price}€ /dia</p>
+                            <p className="text-ink-soft text-xs">{pct ? <><span className="line-through mr-1">{fmtEuro(item.price)}€</span><span className="font-semibold text-brand-pink">{fmtEuro(withDiscount(item.price, pct))}€</span></> : `${fmtEuro(item.price)}€`} /dia</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -369,6 +368,12 @@ export default function Calculator({ services = [] }) {
           <div className="flex flex-col justify-between">
             <div className="bg-gradient-to-br from-brand-orange/10 via-brand-pink/5 to-transparent border border-brand-orange/25 rounded-2xl p-6 text-center">
               <p className="text-ink-soft text-sm mb-1">Valor estimado</p>
+              {pct > 0 && fullEstimate > 0 && (
+                <p className="text-sm text-ink-soft">
+                  <span className="line-through">{fmtEuro(fullEstimate)}€</span>
+                  <span className="ml-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-pink px-2 py-0.5 text-xs font-bold text-white">-{fmtEuro(pct)}%{service.discountLabel ? ` · ${service.discountLabel}` : ""}</span>
+                </p>
+              )}
               <AnimatePresence mode="wait">
                 <motion.p
                   key={estimate}
@@ -378,7 +383,7 @@ export default function Calculator({ services = [] }) {
                   transition={{ duration: 0.2 }}
                   className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-brand-pink"
                 >
-                  {estimate}€
+                  {fmtEuro(estimate)}€
                 </motion.p>
               </AnimatePresence>
               <div className="mt-3 text-ink-soft text-xs space-y-0.5">

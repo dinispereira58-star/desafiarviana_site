@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { discountOf, fmtEuro } from "../lib/discount";
 
 const MotionLink = motion(Link);
 
@@ -50,6 +51,11 @@ export default function Services({ services = [] }) {
                   ("PAINTBALL", etc.) no terço inferior — mostrar sempre o
                   topo evita cortar em cima dessa faixa. */}
               <div className="relative">
+                {discountOf(s) > 0 && (
+                  <span className="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-brand-orange to-brand-pink px-3 py-1 text-sm font-extrabold text-white shadow-lg" title={s.discountLabel || undefined}>
+                    -{fmtEuro(discountOf(s))}%{s.discountLabel ? <span className="ml-1 font-semibold text-xs">{s.discountLabel}</span> : null}
+                  </span>
+                )}
                 <div className="relative h-56 overflow-hidden bg-canvas-alt">
                   {s.photoUrl ? (
                     <img

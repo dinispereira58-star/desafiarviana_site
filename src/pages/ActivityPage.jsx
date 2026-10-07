@@ -6,15 +6,28 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useActivities } from "../lib/useActivities";
 import { useSiteSettings } from "../lib/useSiteSettings";
+import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
+
+// Preço com desconto: o antigo riscado e o novo em destaque.
+function Price({ value, pct, unit }) {
+  if (!pct) return <span className="font-bold text-ink">{fmtEuro(value)}€{unit}</span>;
+  return (
+    <span className="flex items-baseline gap-1.5">
+      <span className="text-xs text-ink-soft line-through">{fmtEuro(value)}€</span>
+      <span className="font-bold text-brand-pink">{fmtEuro(withDiscount(value, pct))}€{unit}</span>
+    </span>
+  );
+}
 
 function PricingSummary({ service }) {
+  const pct = discountOf(service);
   if (service.calculatorType === "paintball" && service.ballPackages?.length > 0) {
     return (
       <div className="space-y-2">
         {service.ballPackages.map((p) => (
           <div key={p.id} className="flex items-center justify-between text-sm">
             <span className="text-ink-soft">{p.label}</span>
-            <span className="font-bold text-ink">{p.pricePerPerson}€ /pessoa</span>
+            <Price value={p.pricePerPerson} pct={pct} unit=" /pessoa" />
           </div>
         ))}
       </div>
@@ -26,7 +39,7 @@ function PricingSummary({ service }) {
         {service.items.map((it) => (
           <div key={it.id} className="flex items-center justify-between text-sm">
             <span className="text-ink-soft">{it.emoji} {it.name}</span>
-            <span className="font-bold text-ink">{it.price}€ /dia</span>
+            <Price value={it.price} pct={pct} unit=" /dia" />
           </div>
         ))}
       </div>
@@ -36,7 +49,7 @@ function PricingSummary({ service }) {
     return (
       <div className="flex items-center justify-between text-sm">
         <span className="text-ink-soft">Por pessoa {service.minPeople ? `(mín. ${service.minPeople})` : ""}</span>
-        <span className="font-bold text-ink">{service.pricePerPerson}€</span>
+        <Price value={service.pricePerPerson} pct={pct} unit="" />
       </div>
     );
   }
@@ -159,6 +172,12 @@ export default function ActivityPage() {
             <h3 className="font-display uppercase text-lg text-ink mb-4 flex items-center gap-2">
               <Euro className="text-brand-orange" size={18} /> Preços
             </h3>
+            {discountOf(service) > 0 && (
+              <div className="mb-4 -mt-1 flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-orange to-brand-pink px-3 py-2 text-white">
+                <span className="font-display text-xl leading-none">-{fmtEuro(discountOf(service))}%</span>
+                <span className="text-xs font-semibold leading-tight">{service.discountLabel || "Desconto em todos os preços desta atividade"}</span>
+              </div>
+            )}
             <PricingSummary service={service} />
             {service.priceNote && (
               <p className="text-xs text-ink-soft mt-3 pt-3 border-t border-ink/10">{service.priceNote}</p>

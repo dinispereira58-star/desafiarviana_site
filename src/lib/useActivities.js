@@ -19,6 +19,8 @@ function mapActivity(a) {
     safetyRules: a.safety_rules || [],
     gallery: a.gallery || [],
     priceNote: a.price_note || "",
+    discountPct: Number(a.discount_pct) || 0,
+    discountLabel: a.discount_label || "",
   };
 }
 
