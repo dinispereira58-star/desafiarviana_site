@@ -9,6 +9,8 @@ import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
 import RentalCatalog from "../components/RentalCatalog";
+import PackCards from "../components/PackCards";
+import { packsOf, extrasOf, perLabel } from "../lib/packs";
 
 // Intros cinematográficas por atividade: fotos (em public/intro/<atividade>/),
 // efeito (paint | confetti | stars | bubbles), cor e palavras de impacto.
@@ -42,6 +44,24 @@ function PricingSummary({ service }) {
           <div key={p.id} className="flex items-center justify-between text-sm">
             <span className="text-ink-soft">{p.label}</span>
             <Price value={p.pricePerPerson} pct={pct} unit=" /pessoa" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (service.calculatorType === "packs" && packsOf(service).length > 0) {
+    return (
+      <div className="space-y-2">
+        {packsOf(service).map((p) => (
+          <div key={p.id} className="flex items-center justify-between text-sm">
+            <span className="text-ink-soft">{p.name}</span>
+            <Price value={p.price} pct={pct} unit="" />
+          </div>
+        ))}
+        {extrasOf(service).map((x) => (
+          <div key={x.id} className="flex items-center justify-between text-sm">
+            <span className="text-ink-soft">{x.name}</span>
+            <Price value={x.price} pct={pct} unit={perLabel(x)} />
           </div>
         ))}
       </div>
@@ -133,6 +153,7 @@ export default function ActivityPage() {
       </section>
 
       {isRental && <RentalCatalog service={service} />}
+      {service.calculatorType === "packs" && <PackCards service={service} />}
 
       {service.photoUrl && !isRental && (
         <div className="max-w-5xl mx-auto px-5 mb-12">

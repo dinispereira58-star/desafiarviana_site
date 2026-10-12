@@ -4,6 +4,7 @@ import { MessageCircle, Mail, Info, Minus, Plus, Send, CheckCircle2, Loader2 } f
 import { supabase } from "../lib/supabase";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
+import { packsOf, extrasOf, perLabel } from "../lib/packs";
 
 export default function Calculator({ services = [] }) {
   const settings = useSiteSettings();
@@ -23,6 +24,7 @@ export default function Calculator({ services = [] }) {
   const [people, setPeople] = useState(10);
   const [packageId, setPackageId] = useState(undefined);
   const [quantities, setQuantities] = useState({}); // rental: { itemId: qty }
+  const [extrasSel, setExtrasSel] = useState({}); // packs: { extraId: true }
   const [date, setDate] = useState("");
   const [extraEquip, setExtraEquip] = useState(false);
   const [clientName, setClientName] = useState("");
@@ -33,14 +35,19 @@ export default function Calculator({ services = [] }) {
   // reset ao trocar de atividade
   useEffect(() => {
     if (!service) return;
-    setPeople(service.minPeople ?? 10);
-    setPackageId(service.ballPackages?.[0]?.id);
+    setPeople(service.calculatorType === "packs" ? 10 : service.minPeople ?? 10);
+    setPackageId(service.calculatorType === "packs" ? packsOf(service)[0]?.id : service.ballPackages?.[0]?.id);
     setQuantities({});
+    setExtrasSel({});
     setExtraEquip(false);
     setSubmitState("idle");
   }, [serviceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectedPackage = service?.ballPackages?.find((p) => p.id === packageId);
+  // Packs (festas): preço fixo do pack + extras (por festa ou por criança). Sem mínimo de crianças.
+  const selectedPack = packsOf(service).find((p) => p.id === packageId);
+  const selectedExtras = extrasOf(service).filter((x) => extrasSel[x.id]);
+  const needsKids = selectedExtras.some((x) => x.per === "crianca");
 
   const selectedItems = useMemo(
     () =>
@@ -59,8 +66,11 @@ export default function Calculator({ services = [] }) {
     if (!service) return 0;
     if (service.calculatorType === "paintball") return selectedPackage ? people * selectedPackage.pricePerPerson : 0;
     if (service.calculatorType === "rental") return selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    if (service.calculatorType === "packs") {
+      return (Number(selectedPack?.price) || 0) + selectedExtras.reduce((sum, x) => sum + Number(x.price) * (x.per === "crianca" ? people : 1), 0);
+    }
     return service.pricePerPerson * Math.max(people, service.minPeople);
-  }, [service, people, selectedPackage, selectedItems]);
+  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras]);
   const extraValue = extraEquip ? 25 : 0;
   const fullEstimate = base + extraValue;
   const estimate = Math.round((withDiscount(base, pct) + extraValue) * 100) / 100;
@@ -74,8 +84,15 @@ export default function Calculator({ services = [] }) {
       if (selectedItems.length === 0) return ["Nenhum item selecionado ainda"];
       return selectedItems.map((item) => `${item.name} x${item.qty} (${item.price}€/un.)`);
     }
+    if (service.calculatorType === "packs") {
+      return [
+        `Pack: ${selectedPack ? `${selectedPack.name} (${fmtEuro(selectedPack.price)}€)` : "-"}`,
+        ...selectedExtras.map((x) => `Extra: ${x.name} (${fmtEuro(x.price)}€${perLabel(x)})`),
+        ...(needsKids ? [`Nº de crianças: ${people}`] : []),
+      ];
+    }
     return [`Nº de pessoas: ${people}`];
-  }, [service, people, selectedPackage, selectedItems]);
+  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras, needsKids]);
 
   const whatsappMessage = encodeURIComponent(
     `Olá! Gostaria de pedir um orçamento:\n` +
@@ -103,7 +120,7 @@ export default function Calculator({ services = [] }) {
       phone: clientPhone.trim() || null,
       email: clientEmail.trim() || null,
       preferred_date: date || null,
-      people_count: service.calculatorType === "rental" ? null : people,
+      people_count: service.calculatorType === "rental" || (service.calculatorType === "packs" && !needsKids) ? null : people,
       message: `${detailLines.join(" · ")} — valor estimado ~${fmtEuro(estimate)}€${pct ? ` (desconto ${fmtEuro(pct)}%)` : ""}${extraEquip ? " (com equipamento extra)" : ""}`,
     });
     setSubmitState(error ? "error" : "sent");
@@ -250,6 +267,70 @@ export default function Calculator({ services = [] }) {
               </div>
             )}
 
+            {service.calculatorType === "packs" && (
+              <>
+                <div>
+                  <label className="block text-sm font-semibold text-ink mb-3">Escolhe o pack</label>
+                  <div className="space-y-2">
+                    {packsOf(service).map((p) => {
+                      const active = packageId === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => setPackageId(p.id)}
+                          className={`relative overflow-hidden w-full text-left px-4 py-3 rounded-xl text-sm border transition-colors ${
+                            active ? "border-transparent text-white" : "bg-canvas-alt border-ink/10 text-ink-soft hover:border-ink/30"
+                          }`}
+                        >
+                          {active && (
+                            <motion.span
+                              layoutId="pack-pill"
+                              className="absolute inset-0 bg-gradient-to-r from-brand-teal to-brand-teal-dark"
+                              transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                            />
+                          )}
+                          <span className="relative flex items-center justify-between font-semibold">
+                            <span>{p.name}</span>
+                            <span>{pct ? <><span className="line-through opacity-60 mr-1.5 text-xs">{fmtEuro(p.price)}€</span>{fmtEuro(withDiscount(p.price, pct))}€</> : `${fmtEuro(p.price)}€`}</span>
+                          </span>
+                          {p.includes?.length > 0 && (
+                            <span className={`relative block text-xs mt-1 ${active ? "text-white/85" : "text-ink-soft"}`}>{p.includes.join(" · ")}</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {extrasOf(service).length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-ink mb-3">Extras (opcional)</label>
+                    <div className="space-y-2">
+                      {extrasOf(service).map((x) => (
+                        <label key={x.id} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${extrasSel[x.id] ? "bg-brand-orange/10 border-brand-orange/50" : "bg-canvas-alt border-ink/10"}`}>
+                          <input type="checkbox" checked={!!extrasSel[x.id]} onChange={(e) => setExtrasSel((s) => ({ ...s, [x.id]: e.target.checked }))} className="w-4 h-4 accent-orange-500" />
+                          <span className="flex-1 text-ink">{x.name}</span>
+                          <span className="text-ink-soft">+{fmtEuro(pct ? withDiscount(x.price, pct) : x.price)}€{perLabel(x)}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {needsKids && (
+                  <div>
+                    <label className="flex justify-between text-sm font-semibold text-ink mb-3">
+                      <span>Número de crianças</span>
+                      <motion.span key={people} initial={{ scale: 1.3 }} animate={{ scale: 1 }} className="text-brand-orange">
+                        {people}
+                      </motion.span>
+                    </label>
+                    <input type="range" min={1} max={60} value={people} onChange={(e) => setPeople(Number(e.target.value))} className="w-full accent-orange-500" />
+                  </div>
+                )}
+              </>
+            )}
+
             {service.calculatorType === "rental" && (
               <div>
                 <label className="block text-sm font-semibold text-ink mb-3">
@@ -323,7 +404,7 @@ export default function Calculator({ services = [] }) {
               />
             </div>
 
-            {service.calculatorType !== "rental" && (
+            {service.calculatorType !== "rental" && service.calculatorType !== "packs" && (
               <label className="flex items-center gap-3 text-sm text-ink-soft">
                 <input
                   type="checkbox"
