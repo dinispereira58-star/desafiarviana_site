@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Ruler } from "lucide-react";
 import { rentalGroups } from "../lib/rentals";
+import { imgPos } from "../lib/imagePos";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 
 const MotionLink = motion(Link);
@@ -38,7 +39,7 @@ export default function RentalCatalog({ service }) {
               >
                 <div className="relative h-52 overflow-hidden bg-canvas-alt">
                   {it.photo_url ? (
-                    <img src={it.photo_url} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img {...imgPos(it.photo_url)} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className={`w-full h-full bg-gradient-to-br ${service.color} flex items-center justify-center`}>
                       <span className="text-7xl drop-shadow-md group-hover:scale-110 transition-transform duration-500">{it.emoji}</span>

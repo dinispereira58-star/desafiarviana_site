@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { itemCategory, comboParts, comboName } from "../lib/rentals";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
+import { imgPos } from "../lib/imagePos";
 
 // Dois preços de uma conjugação (meio dia / dia inteiro), com desconto se houver.
 function ComboPrices({ combo, pct, compact }) {
@@ -21,7 +22,7 @@ function ComboPrices({ combo, pct, compact }) {
 
 const PartLink = ({ service, it }) => (
   <Link to={`/atividades/${service.id}/${it.id}`} className="inline-flex items-center gap-1.5 font-semibold text-ink hover:text-brand-orange transition-colors">
-    {it.photo_url ? <img src={it.photo_url} alt="" className="w-8 h-8 rounded-lg object-cover" /> : <span className="text-xl">{it.emoji}</span>}
+    {it.photo_url ? <img {...imgPos(it.photo_url)} alt="" className="w-8 h-8 rounded-lg object-cover" /> : <span className="text-xl">{it.emoji}</span>}
     {it.name}
   </Link>
 );

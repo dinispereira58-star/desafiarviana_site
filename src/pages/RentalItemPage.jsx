@@ -8,6 +8,7 @@ import { useActivities } from "../lib/useActivities";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import { categoryLabel, comboParts, comboName } from "../lib/rentals";
+import { imgPos } from "../lib/imagePos";
 
 function Price({ value, pct, unit }) {
   if (!pct) return <span className="font-bold text-ink">{fmtEuro(value)}€{unit}</span>;
@@ -95,7 +96,7 @@ export default function RentalItemPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            src={mainPhoto}
+            {...imgPos(mainPhoto)}
             alt={item.name}
             className="w-full h-[280px] md:h-[440px] object-cover rounded-3xl shadow-xl shadow-orange-900/10"
           />
@@ -162,7 +163,7 @@ export default function RentalItemPage() {
                 {gallery.map((url, i) => (
                   <button key={i} type="button" onClick={() => { setPhoto(url); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     className={`rounded-2xl overflow-hidden border-2 transition-colors ${url === mainPhoto ? "border-brand-orange" : "border-transparent hover:border-ink/20"}`}>
-                    <img src={url} alt="" className="w-full aspect-square object-cover" />
+                    <img {...imgPos(url)} alt="" className="w-full aspect-square object-cover" />
                   </button>
                 ))}
               </div>

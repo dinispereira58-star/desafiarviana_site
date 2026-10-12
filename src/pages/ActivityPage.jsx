@@ -10,6 +10,7 @@ import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
 import RentalCatalog from "../components/RentalCatalog";
 import RentalCombos from "../components/RentalCombos";
+import { imgPos } from "../lib/imagePos";
 import PackCards from "../components/PackCards";
 import { packsOf, extrasOf, perLabel } from "../lib/packs";
 
@@ -166,7 +167,7 @@ export default function ActivityPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            src={service.photoUrl}
+            {...imgPos(service.photoUrl)}
             alt={service.name}
             className="w-full h-[280px] md:h-[420px] object-cover object-top rounded-3xl shadow-xl shadow-orange-900/10"
           />
@@ -210,7 +211,7 @@ export default function ActivityPage() {
                   <motion.img
                     key={i}
                     whileHover={{ scale: 1.04 }}
-                    src={url}
+                    {...imgPos(url)}
                     alt=""
                     className="w-full aspect-square object-cover rounded-2xl border border-ink/10 shadow-sm"
                   />

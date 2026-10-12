@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { imgPos } from "../lib/imagePos";
 
 const MotionLink = motion(Link);
 
@@ -45,7 +46,7 @@ export default function Gallery({ services = [] }) {
               className={`relative aspect-square rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-ink/10 block ${s.photoUrl ? '' : `bg-gradient-to-br ${s.color} flex items-center justify-center text-5xl`}`}
             >
               {s.photoUrl ? (
-                <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img {...imgPos(s.photoUrl)} alt={s.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               ) : (
                 <motion.span
                   className="drop-shadow-lg"

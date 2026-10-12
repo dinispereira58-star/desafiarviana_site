@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { discountOf, fmtEuro } from "../lib/discount";
+import { imgPos } from "../lib/imagePos";
 
 const MotionLink = motion(Link);
 
@@ -59,7 +60,7 @@ export default function Services({ services = [] }) {
                 <div className="relative h-56 overflow-hidden bg-canvas-alt">
                   {s.photoUrl ? (
                     <img
-                      src={s.photoUrl}
+                      {...imgPos(s.photoUrl)}
                       alt=""
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />

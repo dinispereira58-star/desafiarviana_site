@@ -69,6 +69,8 @@ export default async function handler(req, res) {
     }
   }
 
+  // Enquadramento guardado no endereço da foto ("#pos=…") não interessa às pré-visualizações.
+  image = String(image || '').replace(/#pos=[\d.,]+$/, '');
   const url = `${SITE_URL}/${rawPath}`;
 
   const html = `<!doctype html>
