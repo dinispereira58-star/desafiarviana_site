@@ -24,4 +24,9 @@ export const RENTAL_DURATIONS = [
 export const rentalPrice = (it, duration) =>
   duration === "meio" ? Number(it.price_half) || Number(it.price) || 0 : Number(it.price) || Number(it.price_half) || 0;
 
+// Conjugações: { kind: "combo", id, name?, parts: [ids dos equipamentos], price_half, price }.
+export const comboParts = (combo, items = []) =>
+  (combo.parts || []).map((id) => items.find((it) => String(it.id) === String(id))).filter(Boolean);
+export const comboName = (combo, items = []) => combo.name || comboParts(combo, items).map((p) => p.name).join(" + ") || "Conjugação";
+
 export const categoryLabel = (it) => RENTAL_CATEGORIES.find((c) => c.key === itemCategory(it))?.singular || "";

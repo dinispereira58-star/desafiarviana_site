@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import { packsOf, extrasOf, perLabel } from "../lib/packs";
-import { RENTAL_DURATIONS, rentalPrice } from "../lib/rentals";
+import { RENTAL_DURATIONS, rentalPrice, comboName } from "../lib/rentals";
 
 export default function Calculator({ services = [] }) {
   const settings = useSiteSettings();
@@ -51,12 +51,21 @@ export default function Calculator({ services = [] }) {
   const selectedExtras = extrasOf(service).filter((x) => extrasSel[x.id]);
   const needsKids = selectedExtras.some((x) => x.per === "crianca");
 
+  // Alugueres: equipamentos e, a seguir, as conjugações (com o seu próprio preço).
+  const rentalOptions = useMemo(
+    () => [
+      ...(service?.items ?? []),
+      ...(service?.combos ?? []).map((c) => ({ ...c, emoji: "🎁", name: comboName(c, service.items) })),
+    ],
+    [service]
+  );
+
   const selectedItems = useMemo(
     () =>
-      (service?.items ?? [])
+      (service?.calculatorType === "rental" ? rentalOptions : service?.items ?? [])
         .map((item) => ({ ...item, qty: quantities[item.id] ?? 0 }))
         .filter((item) => item.qty > 0),
-    [service, quantities]
+    [service, quantities, rentalOptions]
   );
 
   const setQty = (itemId, qty) =>
@@ -366,11 +375,14 @@ export default function Calculator({ services = [] }) {
                   Escolhe os itens (podes combinar vários)
                 </label>
                 <div className="space-y-2">
-                  {(service.items ?? []).map((item) => {
+                  {rentalOptions.map((item, idx) => {
                     const qty = quantities[item.id] ?? 0;
                     return (
+                      <div key={item.id}>
+                      {item.kind === "combo" && rentalOptions[idx - 1]?.kind !== "combo" && (
+                        <p className="text-sm font-semibold text-ink mt-4 mb-2">🎁 Conjugações (preço especial)</p>
+                      )}
                       <div
-                        key={item.id}
                         className={`flex items-center justify-between px-4 py-2.5 rounded-xl border transition-colors ${
                           qty > 0
                             ? "bg-brand-orange/10 border-brand-orange/50"
@@ -414,6 +426,7 @@ export default function Calculator({ services = [] }) {
                             <Plus size={14} />
                           </motion.button>
                         </div>
+                      </div>
                       </div>
                     );
                   })}

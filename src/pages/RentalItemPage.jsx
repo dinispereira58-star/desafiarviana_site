@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import { useActivities } from "../lib/useActivities";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
-import { categoryLabel } from "../lib/rentals";
+import { categoryLabel, comboParts, comboName } from "../lib/rentals";
 
 function Price({ value, pct, unit }) {
   if (!pct) return <span className="font-bold text-ink">{fmtEuro(value)}€{unit}</span>;
@@ -56,6 +56,8 @@ export default function RentalItemPage() {
   const pct = discountOf(service);
   const features = (item.features || []).filter((f) => f.label || f.value);
   const extraPrices = (item.extra_prices || []).filter((p) => p.label);
+  // Conjugações em que este equipamento entra.
+  const combos = (service.combos || []).filter((c) => comboParts(c, service.items).some((p) => p.id === item.id));
   const gallery = [item.photo_url, ...(item.gallery || [])].filter(Boolean);
   const mainPhoto = photo || gallery[0];
   const whatsappMessage = encodeURIComponent(`Olá! Tenho interesse no aluguer de: ${item.name}.`);
@@ -201,6 +203,24 @@ export default function RentalItemPage() {
               <p className="text-xs text-ink-soft mt-3 pt-3 border-t border-ink/10">{service.priceNote}</p>
             )}
           </div>
+
+          {combos.length > 0 && (
+            <div className="bg-white border border-ink/10 rounded-2xl p-6 shadow-sm">
+              <h3 className="font-display uppercase text-lg text-ink mb-1">🎁 Conjugações</h3>
+              <p className="text-xs text-ink-soft mb-3">Junta este equipamento a outro e paga menos.</p>
+              <div className="space-y-3">
+                {combos.map((c) => (
+                  <div key={c.id} className="text-sm">
+                    <p className="font-semibold text-ink">{comboName(c, service.items)}</p>
+                    <p className="text-ink-soft flex flex-wrap gap-x-3">
+                      {Number(c.price_half) > 0 && <span>Meio dia <b className="text-ink">{fmtEuro(withDiscount(c.price_half, pct))}€</b></span>}
+                      {Number(c.price) > 0 && <span>Dia inteiro <b className="text-ink">{fmtEuro(withDiscount(c.price, pct))}€</b></span>}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="bg-white border border-ink/10 rounded-2xl p-6 shadow-sm space-y-3">
             <Link

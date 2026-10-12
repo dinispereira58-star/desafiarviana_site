@@ -14,7 +14,9 @@ function mapActivity(a) {
     minPeople: a.min_people,
     pricePerPerson: a.price_per_person,
     ballPackages: a.ball_packages || [],
-    items: a.items || [],
+    // Alugueres: equipamentos em `items`; conjugações (kind "combo") à parte.
+    items: (a.items || []).filter((it) => it.kind !== "combo"),
+    combos: (a.items || []).filter((it) => it.kind === "combo"),
     longDescription: a.long_description || "",
     safetyRules: a.safety_rules || [],
     gallery: a.gallery || [],

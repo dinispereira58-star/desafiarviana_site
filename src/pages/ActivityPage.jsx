@@ -9,6 +9,7 @@ import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
 import RentalCatalog from "../components/RentalCatalog";
+import RentalCombos from "../components/RentalCombos";
 import PackCards from "../components/PackCards";
 import { packsOf, extrasOf, perLabel } from "../lib/packs";
 
@@ -156,6 +157,7 @@ export default function ActivityPage() {
       </section>
 
       {isRental && <RentalCatalog service={service} />}
+      {isRental && <RentalCombos service={service} />}
       {service.calculatorType === "packs" && <PackCards service={service} />}
 
       {service.photoUrl && !isRental && (
