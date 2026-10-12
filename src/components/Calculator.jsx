@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Mail, Info, Minus, Plus, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
@@ -10,14 +11,18 @@ import { RENTAL_DURATIONS, rentalPrice, comboName } from "../lib/rentals";
 export default function Calculator({ services = [] }) {
   const settings = useSiteSettings();
   const [serviceId, setServiceId] = useState(null);
+  // Vindo de "Simular orçamento" numa atividade: /?atividade=<id>&item=<equipamento>#calculadora
+  const [params] = useSearchParams();
+  const wanted = params.get("atividade");
+  const wantedItem = params.get("item");
 
   // As atividades chegam de forma assíncrona (Supabase) — assim que
-  // estiverem disponíveis, seleciona a primeira por omissão.
+  // estiverem disponíveis, seleciona a pedida no link ou a primeira.
   useEffect(() => {
-    if (services.length && !services.some((s) => s.id === serviceId)) {
-      setServiceId(services[0].id);
-    }
-  }, [services]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!services.length) return;
+    if (wanted && services.some((s) => s.id === wanted)) setServiceId(wanted);
+    else if (!services.some((s) => s.id === serviceId)) setServiceId(services[0].id);
+  }, [services, wanted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const service = services.find((s) => s.id === serviceId);
 
@@ -44,6 +49,11 @@ export default function Calculator({ services = [] }) {
     setExtraEquip(false);
     setSubmitState("idle");
   }, [serviceId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Equipamento vindo da página dele: já fica escolhido (1 unidade).
+  useEffect(() => {
+    if (wantedItem && serviceId === wanted) setQuantities((q) => ({ ...q, [wantedItem]: q[wantedItem] || 1 }));
+  }, [wantedItem, wanted, serviceId]);
 
   const selectedPackage = service?.ballPackages?.find((p) => p.id === packageId);
   // Packs (festas): preço fixo do pack + extras (por festa ou por criança). Sem mínimo de crianças.
@@ -140,16 +150,16 @@ export default function Calculator({ services = [] }) {
 
   if (!service) {
     return (
-      <section id="calculadora" className="py-24 px-5 bg-canvas">
+      <section id="calculadora" className="py-16 md:py-24 px-5 bg-canvas">
         <div className="max-w-4xl mx-auto text-center text-ink-soft">A carregar atividades...</div>
       </section>
     );
   }
 
   return (
-    <section id="calculadora" className="py-24 px-5 bg-canvas">
+    <section id="calculadora" className="py-16 md:py-24 px-5 bg-canvas">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
           <span className="text-brand-teal font-semibold text-sm tracking-widest uppercase">
             Simulador
           </span>

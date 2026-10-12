@@ -6,9 +6,9 @@ const MotionLink = motion(Link);
 // Placeholders de cor — SUBSTITUIR por fotos/vídeos reais das atividades
 export default function Gallery({ services = [] }) {
   return (
-    <section id="galeria" className="py-28 px-5 bg-canvas">
+    <section id="galeria" className="py-16 md:py-28 px-5 bg-canvas">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

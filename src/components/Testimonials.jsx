@@ -13,9 +13,9 @@ export default function Testimonials() {
   const testimonials = useTestimonials();
   if (!testimonials.length) return null;
   return (
-    <section id="testemunhos" className="py-24 px-5 bg-canvas-alt">
+    <section id="testemunhos" className="py-16 md:py-24 px-5 bg-canvas-alt">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -6,10 +6,10 @@ const MotionLink = motion(Link);
 
 export default function Services({ services = [] }) {
   return (
-    <section id="servicos" className="relative py-28 px-5 bg-canvas-alt overflow-hidden">
+    <section id="servicos" className="relative py-16 md:py-28 px-5 bg-canvas-alt overflow-hidden">
       <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-brand-teal/15 blur-[90px]" />
       <div className="max-w-6xl mx-auto relative">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

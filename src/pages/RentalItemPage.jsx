@@ -224,7 +224,7 @@ export default function RentalItemPage() {
 
           <div className="bg-white border border-ink/10 rounded-2xl p-6 shadow-sm space-y-3">
             <Link
-              to="/#calculadora"
+              to={`/?atividade=${service.id}&item=${encodeURIComponent(item.id)}#calculadora`}
               className="flex items-center justify-center gap-2 w-full font-semibold px-5 py-3 rounded-full bg-gradient-to-r from-brand-orange to-brand-pink text-white shadow-lg shadow-orange-500/25 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               Simular orçamento <ArrowRight size={16} />

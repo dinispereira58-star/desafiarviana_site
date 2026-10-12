@@ -33,7 +33,7 @@ const CHANNELS = (settings) => [
 export default function Contact() {
   const settings = useSiteSettings();
   return (
-    <section id="contacto" className="relative py-24 px-5 bg-canvas overflow-hidden">
+    <section id="contacto" className="relative py-16 md:py-24 px-5 bg-canvas overflow-hidden">
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[36rem] h-64 rounded-full bg-brand-orange/10 blur-[100px]" />
       <div className="max-w-4xl mx-auto text-center relative">
         <span className="text-brand-orange font-semibold text-sm tracking-widest uppercase">
