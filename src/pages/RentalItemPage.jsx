@@ -180,11 +180,13 @@ export default function RentalItemPage() {
               </div>
             )}
             <div className="space-y-2">
-              {Number(item.price) > 0 ? (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-ink-soft">Aluguer (dia)</span>
-                  <Price value={item.price} pct={pct} unit="" />
-                </div>
+              {Number(item.price) > 0 || Number(item.price_half) > 0 ? (
+                [["Meio dia", item.price_half], ["Dia inteiro", item.price]].filter(([, v]) => Number(v) > 0).map(([label, v]) => (
+                  <div key={label} className="flex items-center justify-between text-sm">
+                    <span className="text-ink-soft">{label}</span>
+                    <Price value={v} pct={pct} unit="" />
+                  </div>
+                ))
               ) : (
                 <p className="text-sm text-ink-soft">Preço sob consulta.</p>
               )}

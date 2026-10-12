@@ -73,7 +73,10 @@ function PricingSummary({ service }) {
         {service.items.map((it) => (
           <div key={it.id} className="flex items-center justify-between text-sm">
             <span className="text-ink-soft">{it.emoji} {it.name}</span>
-            <Price value={it.price} pct={pct} unit=" /dia" />
+            <span className="flex flex-col items-end">
+              {Number(it.price_half) > 0 && <Price value={it.price_half} pct={pct} unit=" meio dia" />}
+              {Number(it.price) > 0 && <Price value={it.price} pct={pct} unit=" dia inteiro" />}
+            </span>
           </div>
         ))}
       </div>

@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import { packsOf, extrasOf, perLabel } from "../lib/packs";
+import { RENTAL_DURATIONS, rentalPrice } from "../lib/rentals";
 
 export default function Calculator({ services = [] }) {
   const settings = useSiteSettings();
@@ -25,6 +26,7 @@ export default function Calculator({ services = [] }) {
   const [packageId, setPackageId] = useState(undefined);
   const [quantities, setQuantities] = useState({}); // rental: { itemId: qty }
   const [extrasSel, setExtrasSel] = useState({}); // packs: { extraId: true }
+  const [duration, setDuration] = useState("dia"); // rental: "meio" | "dia"
   const [date, setDate] = useState("");
   const [extraEquip, setExtraEquip] = useState(false);
   const [clientName, setClientName] = useState("");
@@ -65,12 +67,12 @@ export default function Calculator({ services = [] }) {
   const base = useMemo(() => {
     if (!service) return 0;
     if (service.calculatorType === "paintball") return selectedPackage ? people * selectedPackage.pricePerPerson : 0;
-    if (service.calculatorType === "rental") return selectedItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+    if (service.calculatorType === "rental") return selectedItems.reduce((sum, item) => sum + rentalPrice(item, duration) * item.qty, 0);
     if (service.calculatorType === "packs") {
       return (Number(selectedPack?.price) || 0) + selectedExtras.reduce((sum, x) => sum + Number(x.price) * (x.per === "crianca" ? people : 1), 0);
     }
     return service.pricePerPerson * Math.max(people, service.minPeople);
-  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras]);
+  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras, duration]);
   const extraValue = extraEquip ? 25 : 0;
   const fullEstimate = base + extraValue;
   const estimate = Math.round((withDiscount(base, pct) + extraValue) * 100) / 100;
@@ -82,7 +84,8 @@ export default function Calculator({ services = [] }) {
     }
     if (service.calculatorType === "rental") {
       if (selectedItems.length === 0) return ["Nenhum item selecionado ainda"];
-      return selectedItems.map((item) => `${item.name} x${item.qty} (${item.price}€/un.)`);
+      const dLabel = RENTAL_DURATIONS.find((d) => d.key === duration).label;
+      return [`Duração: ${dLabel}`, ...selectedItems.map((item) => `${item.name} x${item.qty} (${fmtEuro(rentalPrice(item, duration))}€/un., ${dLabel.toLowerCase()})`)];
     }
     if (service.calculatorType === "packs") {
       return [
@@ -92,7 +95,7 @@ export default function Calculator({ services = [] }) {
       ];
     }
     return [`Nº de pessoas: ${people}`];
-  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras, needsKids]);
+  }, [service, people, selectedPackage, selectedItems, selectedPack, selectedExtras, needsKids, duration]);
 
   const whatsappMessage = encodeURIComponent(
     `Olá! Gostaria de pedir um orçamento:\n` +
@@ -333,6 +336,32 @@ export default function Calculator({ services = [] }) {
 
             {service.calculatorType === "rental" && (
               <div>
+                <label className="block text-sm font-semibold text-ink mb-3">Duração</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {RENTAL_DURATIONS.map((d) => (
+                    <button
+                      key={d.key}
+                      onClick={() => setDuration(d.key)}
+                      className={`relative overflow-hidden px-3 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                        duration === d.key ? "border-transparent text-white" : "bg-canvas-alt border-ink/10 text-ink-soft hover:border-ink/30"
+                      }`}
+                    >
+                      {duration === d.key && (
+                        <motion.span
+                          layoutId="duration-pill"
+                          className="absolute inset-0 bg-gradient-to-r from-brand-teal to-brand-teal-dark"
+                          transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative">{d.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {service.calculatorType === "rental" && (
+              <div>
                 <label className="block text-sm font-semibold text-ink mb-3">
                   Escolhe os itens (podes combinar vários)
                 </label>
@@ -352,7 +381,7 @@ export default function Calculator({ services = [] }) {
                           <span className="shrink-0">{item.emoji}</span>
                           <div className="min-w-0">
                             <p className="font-medium text-ink truncate">{item.name}</p>
-                            <p className="text-ink-soft text-xs">{pct ? <><span className="line-through mr-1">{fmtEuro(item.price)}€</span><span className="font-semibold text-brand-pink">{fmtEuro(withDiscount(item.price, pct))}€</span></> : `${fmtEuro(item.price)}€`} /dia</p>
+                            <p className="text-ink-soft text-xs">{pct ? <><span className="line-through mr-1">{fmtEuro(rentalPrice(item, duration))}€</span><span className="font-semibold text-brand-pink">{fmtEuro(withDiscount(rentalPrice(item, duration), pct))}€</span></> : `${fmtEuro(rentalPrice(item, duration))}€`} / {duration === "meio" ? "meio dia" : "dia inteiro"}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">

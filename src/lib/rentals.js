@@ -15,4 +15,13 @@ export const itemCategory = (it) =>
 export const rentalGroups = (items = []) =>
   RENTAL_CATEGORIES.map((c) => ({ ...c, items: items.filter((it) => itemCategory(it) === c.key) })).filter((g) => g.items.length > 0);
 
+// Dois preços por item: meio dia (price_half) e dia inteiro (price). Se só
+// houver um, serve para as duas durações.
+export const RENTAL_DURATIONS = [
+  { key: "meio", label: "Meio dia" },
+  { key: "dia", label: "Dia inteiro" },
+];
+export const rentalPrice = (it, duration) =>
+  duration === "meio" ? Number(it.price_half) || Number(it.price) || 0 : Number(it.price) || Number(it.price_half) || 0;
+
 export const categoryLabel = (it) => RENTAL_CATEGORIES.find((c) => c.key === itemCategory(it))?.singular || "";

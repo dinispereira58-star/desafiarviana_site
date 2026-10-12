@@ -53,17 +53,21 @@ export default function RentalCatalog({ service }) {
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-ink leading-snug">{it.name}</h3>
                   {it.description && <p className="text-ink-soft text-sm leading-relaxed mt-1.5 line-clamp-2">{it.description}</p>}
-                  <div className="mt-4 flex items-center justify-between">
-                    {Number(it.price) > 0 ? (
-                      <span className="flex items-baseline gap-1.5">
-                        {pct > 0 && <span className="text-xs text-ink-soft line-through">{fmtEuro(it.price)}€</span>}
-                        <span className={`font-bold text-lg ${pct > 0 ? "text-brand-pink" : "text-ink"}`}>{fmtEuro(withDiscount(it.price, pct))}€</span>
-                        <span className="text-xs text-ink-soft">/dia</span>
-                      </span>
+                  <div className="mt-4 flex items-end justify-between gap-3">
+                    {Number(it.price) > 0 || Number(it.price_half) > 0 ? (
+                      <div className="space-y-0.5">
+                        {[["Meio dia", it.price_half], ["Dia inteiro", it.price]].filter(([, v]) => Number(v) > 0).map(([label, v]) => (
+                          <p key={label} className="flex items-baseline gap-1.5 text-sm">
+                            <span className="text-ink-soft w-[4.6rem]">{label}</span>
+                            {pct > 0 && <span className="text-xs text-ink-soft line-through">{fmtEuro(v)}€</span>}
+                            <span className={`font-bold ${pct > 0 ? "text-brand-pink" : "text-ink"}`}>{fmtEuro(withDiscount(v, pct))}€</span>
+                          </p>
+                        ))}
+                      </div>
                     ) : (
                       <span className="text-sm text-ink-soft">Preço sob consulta</span>
                     )}
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-ink group-hover:text-brand-orange transition-colors">
+                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-ink group-hover:text-brand-orange transition-colors shrink-0">
                       Ver detalhes <span className="group-hover:translate-x-1 transition-transform">→</span>
                     </span>
                   </div>
