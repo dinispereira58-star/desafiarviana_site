@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import ActivityPage from "./pages/ActivityPage";
+import RentalItemPage from "./pages/RentalItemPage";
 import FaqPage from "./pages/FaqPage";
 import LegalPage from "./pages/LegalPage";
 import PopupManager from "./components/PopupManager";
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/atividades/:id" element={<ActivityPage />} />
+        <Route path="/atividades/:id/:itemId" element={<RentalItemPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/termos-condicoes" element={<LegalPage title="Termos e Condições" contentKey="terms_content" />} />
         <Route path="/politica-privacidade" element={<LegalPage title="Política de Privacidade" contentKey="privacy_content" />} />

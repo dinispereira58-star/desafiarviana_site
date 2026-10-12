@@ -8,6 +8,7 @@ import { useActivities } from "../lib/useActivities";
 import { useSiteSettings } from "../lib/useSiteSettings";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
 import CinematicIntro, { shouldPlayIntro } from "../components/CinematicIntro";
+import RentalCatalog from "../components/RentalCatalog";
 
 // Intros cinematográficas por atividade: fotos (em public/intro/<atividade>/),
 // efeito (paint | confetti | stars | bubbles), cor e palavras de impacto.
@@ -104,6 +105,8 @@ export default function ActivityPage() {
   }
 
   const whatsappMessage = encodeURIComponent(`Olá! Tenho interesse em saber mais sobre ${service.name}.`);
+  // Alugueres: a página mostra logo um cartão por item (insufláveis e trampolins).
+  const isRental = service.calculatorType === "rental" && service.items?.length > 0;
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -129,7 +132,9 @@ export default function ActivityPage() {
         </div>
       </section>
 
-      {service.photoUrl && (
+      {isRental && <RentalCatalog service={service} />}
+
+      {service.photoUrl && !isRental && (
         <div className="max-w-5xl mx-auto px-5 mb-12">
           <motion.img
             initial={{ opacity: 0, y: 20 }}
@@ -146,7 +151,7 @@ export default function ActivityPage() {
         <div className="space-y-10">
           {(service.longDescription || service.description) && (
             <div>
-              <h2 className="font-display uppercase text-2xl text-ink mb-3">Sobre a atividade</h2>
+              <h2 className="font-display uppercase text-2xl text-ink mb-3">{isRental ? "Sobre os nossos alugueres" : "Sobre a atividade"}</h2>
               <p className="text-ink-soft leading-relaxed whitespace-pre-line">
                 {service.longDescription || service.description}
               </p>
@@ -156,7 +161,7 @@ export default function ActivityPage() {
           {service.safetyRules?.length > 0 && (
             <div>
               <h2 className="font-display uppercase text-2xl text-ink mb-3 flex items-center gap-2">
-                <ShieldCheck className="text-brand-teal" size={22} /> Segurança
+                <ShieldCheck className="text-brand-teal" size={22} /> {isRental ? "Regras de segurança" : "Segurança"}
               </h2>
               <ul className="space-y-2.5">
                 {service.safetyRules.map((rule, i) => (

@@ -3,8 +3,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useSiteSettings } from "../lib/useSiteSettings";
+import { useActivities } from "../lib/useActivities";
 
-const links = [
+const baseLinks = [
   { href: "/#servicos", label: "Serviços" },
   { href: "/#calculadora", label: "Orçamento" },
   { href: "/#galeria", label: "Galeria" },
@@ -14,6 +15,10 @@ const links = [
 
 export default function Navbar() {
   const s = useSiteSettings();
+  // Separador "Alugueres": abre a página da atividade de aluguer (cartões dos insufláveis e trampolins).
+  const { services } = useActivities();
+  const rental = services.find((x) => x.calculatorType === "rental");
+  const links = rental ? [baseLinks[0], { href: `/atividades/${rental.id}`, label: "Alugueres" }, ...baseLinks.slice(1)] : baseLinks;
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 

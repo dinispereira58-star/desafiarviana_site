@@ -47,10 +47,10 @@ export default async function handler(req, res) {
 
     // Página de uma atividade específica — usa o nome/foto dela em vez
     // dos valores gerais do site.
-    const activityMatch = rawPath.match(/^atividades\/([^/?]+)/);
+    const activityMatch = rawPath.match(/^atividades\/([^/?]+)(?:\/([^/?]+))?/);
     if (activityMatch) {
       const activityRows = await fetchJson(
-        `${SUPABASE_URL}/rest/v1/activities?id=eq.${encodeURIComponent(activityMatch[1])}&select=name,tagline,photo_url`,
+        `${SUPABASE_URL}/rest/v1/activities?id=eq.${encodeURIComponent(activityMatch[1])}&select=name,tagline,photo_url,items`,
         headers
       );
       const activity = activityRows?.[0];
@@ -58,6 +58,13 @@ export default async function handler(req, res) {
         title = `${activity.name} — Desafiar Viana`;
         description = activity.tagline || description;
         image = activity.photo_url || image;
+        // Página de um aluguer (insuflável/trampolim): nome, descrição e foto do item.
+        const item = activityMatch[2] && (activity.items || []).find((it) => String(it.id) === decodeURIComponent(activityMatch[2]));
+        if (item) {
+          title = `${item.name} — Desafiar Viana`;
+          description = item.description || [item.size && `Tamanho: ${item.size}`, activity.name].filter(Boolean).join(' · ');
+          image = item.photo_url || image;
+        }
       }
     }
   }
