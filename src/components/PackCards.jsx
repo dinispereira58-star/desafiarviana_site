@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { Check, Plus } from "lucide-react";
 import { packsOf, extrasOf, perLabel } from "../lib/packs";
 import { discountOf, withDiscount, fmtEuro } from "../lib/discount";
@@ -41,14 +40,6 @@ export default function PackCards({ service }) {
                 </li>
               ))}
             </ul>
-            <div className="px-6 pb-6">
-              <Link
-                to="/#calculadora"
-                className="flex items-center justify-center w-full font-semibold px-5 py-2.5 rounded-full border border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white transition-colors text-sm"
-              >
-                Escolher este pack
-              </Link>
-            </div>
           </motion.div>
         ))}
       </div>
